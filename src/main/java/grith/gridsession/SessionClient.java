@@ -42,7 +42,7 @@ public class SessionClient {
 				client.getSessionManagement().status();
 				return client;
 			} catch (UndeclaredThrowableException e) {
-				e.printStackTrace();
+				// e.printStackTrace();
 				myLogger.debug("Could not execute command, trying again.");
 				try {
 					Thread.sleep(500);
