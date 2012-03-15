@@ -127,7 +127,7 @@ public class SessionClient {
 	}
 
 	public void execute(Map<String, String> config) {
-		System.out.println(StringUtils.join(sm.getIdPs(), "\n"));
+		System.out.println(StringUtils.join(sm.list_institutions(), "\n"));
 		// sm.shutdown();
 	}
 

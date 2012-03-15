@@ -79,15 +79,19 @@ public class SessionManagement implements ISessionManagement {
 		return cred;
 	}
 
-	public List<String> getIdPs() {
-		try {
-			return SlcsLoginWrapper.getAllIdps();
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
+	/* (non-Javadoc)
+	 * @see grith.jgrith.session.ISessionManagement#isLoggedIn()
+	 */
+	public Boolean is_logged_in() {
+
+		Credential currentCredential = getCredential();
+		if (currentCredential == null) {
+			return false;
 		}
+		return currentCredential.isValid();
 	}
 
-	public int getRemainingLifetime() {
+	public int lifetime() {
 
 		Credential currentCredential = getCredential();
 
@@ -98,41 +102,21 @@ public class SessionManagement implements ISessionManagement {
 		return currentCredential.getRemainingLifetime();
 	}
 
-	/* (non-Javadoc)
-	 * @see grith.jgrith.session.ISessionManagement#isLoggedIn()
-	 */
-	public Boolean isLoggedIn() {
-
-		Credential currentCredential = getCredential();
-		if (currentCredential == null) {
-			return false;
+	public List<String> list_institutions() {
+		try {
+			return SlcsLoginWrapper.getAllIdps();
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
 		}
-		return currentCredential.isValid();
 	}
 
 	public synchronized Boolean login(Map<String, Object> config) {
-
-		Map<PROPERTY, Object> newMap = Maps.newHashMap();
-		for (Object key : config.keySet()) {
-			PROPERTY p = PROPERTY.valueOf((String) key);
-			newMap.put(p, config.get(key));
-		}
-
-		Credential currentCredential = Credential.loadFromConfig(newMap, true);
-		currentCredential.saveCredential(location);
-
-		setCredential(currentCredential);
-
-		return true;
+		return start(config);
 	}
 
 	public void logout() {
 
-		Credential currentCredential = getCredential();
-
-		if (currentCredential != null) {
-			currentCredential.destroy();
-		}
+		stop();
 
 	}
 
@@ -169,12 +153,28 @@ public class SessionManagement implements ISessionManagement {
 		return true;
 	}
 
+	public synchronized Boolean start(Map<String, Object> config) {
+
+		Map<PROPERTY, Object> newMap = Maps.newHashMap();
+		for (Object key : config.keySet()) {
+			PROPERTY p = PROPERTY.valueOf((String) key);
+			newMap.put(p, config.get(key));
+		}
+
+		Credential currentCredential = Credential.loadFromConfig(newMap, true);
+		currentCredential.saveCredential(location);
+
+		setCredential(currentCredential);
+
+		return true;
+	}
+
 	public String status() {
 
-		if (!isLoggedIn()) {
+		if (!is_logged_in()) {
 			return "Not logged in";
 		}
-		int remaining = getRemainingLifetime();
+		int remaining = lifetime();
 		Credential c = getCredential();
 
 		Map<String, String> temp = Maps.newLinkedHashMap();
@@ -196,6 +196,18 @@ public class SessionManagement implements ISessionManagement {
 
 		String output = OutputHelpers.getTable(temp);
 		return output;
+	}
+
+	public void stop() {
+
+		Credential currentCredential = getCredential();
+
+		if (currentCredential != null) {
+			currentCredential.destroy();
+		}
+
+		shutdown();
+
 	}
 
 }

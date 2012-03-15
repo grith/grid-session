@@ -4,9 +4,6 @@ import grisu.jcommons.configuration.CommonGridProperties
 import grisu.jcommons.constants.Enums.LoginType
 import grisu.jcommons.dependencies.BouncyCastleTool
 import grisu.jcommons.view.cli.CliHelpers
-import grith.gridsession.ISessionManagement;
-import grith.gridsession.SessionClient;
-import grith.gridsession.SessionManagement;
 import grith.jgrith.credential.Credential
 import grith.jgrith.utils.CliLogin
 
@@ -19,10 +16,8 @@ class CliSessionControl {
 
 		def control = new CliSessionControl(false)
 
-		//control.execute('status')
-		//		control.execute('getIdPs')
 
-		control.execute('login')
+		control.execute('list_institutions')
 
 		System.exit(0);
 	}
@@ -75,6 +70,10 @@ class CliSessionControl {
 	}
 
 	private login() {
+		return start()
+	}
+
+	private start() {
 
 		def loginConf = [:]
 
@@ -111,7 +110,7 @@ class CliSessionControl {
 			case 'Institution login':
 				loginConf[Credential.PROPERTY.LoginType.toString()] = LoginType.SHIBBOLETH
 
-				def idps = sm.getIdPs()
+				def idps = sm.list_institutions()
 				idpToUse = CliLogin.ask("Your institution", lastIdp, idps,
 						"Please select the institution you are associated with:", true);
 				if (!idpToUse) {

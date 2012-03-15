@@ -5,18 +5,24 @@ import java.util.Map;
 
 public interface ISessionManagement {
 
-	public abstract List<String> getIdPs();
+	public abstract Boolean is_logged_in();
 
-	public int getRemainingLifetime();
+	public int lifetime();
 
-	public abstract Boolean isLoggedIn();
+	public abstract List<String> list_institutions();
 
 	public abstract Boolean login(Map<String, Object> config);
+
+	public abstract void logout();
 
 	public boolean refresh();
 
 	public abstract boolean shutdown();
 
+	public abstract Boolean start(Map<String, Object> config);
+
 	public abstract String status();
+
+	public abstract void stop();
 
 }
