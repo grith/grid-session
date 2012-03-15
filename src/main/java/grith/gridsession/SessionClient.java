@@ -1,7 +1,8 @@
 package grith.gridsession;
 
 import grisu.jcommons.dependencies.BouncyCastleTool;
-import grith.gridsession.CliSessionControl;
+import grisu.jcommons.utils.EnvironmentVariableHelpers;
+import grisu.jcommons.utils.JythonHelpers;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.math.BigInteger;
@@ -41,7 +42,7 @@ public class SessionClient {
 				client.getSessionManagement().status();
 				return client;
 			} catch (UndeclaredThrowableException e) {
-				// e.printStackTrace();
+				e.printStackTrace();
 				myLogger.debug("Could not execute command, trying again.");
 				try {
 					Thread.sleep(500);
@@ -61,6 +62,9 @@ public class SessionClient {
 
 	public static void main(String[] args) throws Exception {
 
+		EnvironmentVariableHelpers.loadEnvironmentVariablesToSystemProperties();
+		Thread.currentThread().setName("main");
+		JythonHelpers.setJythonCachedir();
 		BouncyCastleTool.initBouncyCastle();
 
 		Daemon d = new Daemon();

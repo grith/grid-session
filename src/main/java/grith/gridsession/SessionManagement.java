@@ -1,5 +1,7 @@
 package grith.gridsession;
 
+import grisu.jcommons.utils.OutputHelpers;
+import grisu.jcommons.utils.WalltimeUtils;
 import grith.jgrith.control.SlcsLoginWrapper;
 import grith.jgrith.credential.Credential;
 import grith.jgrith.credential.Credential.PROPERTY;
@@ -168,7 +170,32 @@ public class SessionManagement implements ISessionManagement {
 	}
 
 	public String status() {
-		return "grid-session service.";
+
+		if (!isLoggedIn()) {
+			return "Not logged in";
+		}
+		int remaining = getRemainingLifetime();
+		Credential c = getCredential();
+
+		Map<String, String> temp = Maps.newLinkedHashMap();
+		String[] remainingString = WalltimeUtils
+				.convertSecondsInHumanReadableString(remaining);
+		temp.put("Remaining session lifetime", remainingString[0] + " "
+				+ remainingString[1] + " (" + remaining + " seconds)");
+
+		if (c.isAutoRenewable()) {
+			// env.printMessage("Session auto-renew: yes");
+			temp.put("Session auto-renew", "yes");
+		} else {
+			temp.put(
+					"Session auto-renew",
+					"no (to enable, you need to issue the 'renew session' command or delete your proxy and log in again.)");
+			// env.printMessage("Session auto-renew: no (to enable, you need to issue the 'renew session' command or delete your proxy and log in again.)");
+		}
+		temp.put("User ID", c.getDn());
+
+		String output = OutputHelpers.getTable(temp);
+		return output;
 	}
 
 }

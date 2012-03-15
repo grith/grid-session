@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>nesi</artifactId>
 		<groupId>nz.org.nesi</groupId>
-		<version>0.11-SNAPSHOT</version>
+		<version>0.11</version>
 	</parent>
 	
 	
@@ -40,7 +40,7 @@
   	<dependency>
   		<groupId>org.bouncycastle</groupId>
   		<artifactId>bcprov-jdk15</artifactId>
-  		<version>1.45</version>
+  		<version>${bcprov.version}</version>
   		<scope>provided</scope>
   	</dependency>
   	
