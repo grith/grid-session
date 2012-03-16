@@ -37,10 +37,10 @@ Usage
 
 Possible commands:
 
- - '''start'''			 kicks off the login process and runs the daemon in the background to auto-renew the credential whenever necessary
- - '''stop'''		      	 destroys the credential and stops the daemon
- - '''status'''			 displays information about the login state (lifetime left, whether the credential is autorenewable)
- - '''lifetime'''		 displays the lifetime that is left for the current credential (in seconds)
- - '''is_logged_in'''		 displays whether there is currently a valid credential
- - '''refresh'''		 forces an auto-refresh of the credential. only works for auto-renewable credentials
- - '''list_institutions'''	 displays a list of all available institutions (you wouldn't reallly need this command)
+ - **start**:			 kicks off the login process and runs the daemon in the background to auto-renew the credential whenever necessary
+ - **stop**:	      	 destroys the credential and stops the daemon
+ - **status**:			 displays information about the login state (lifetime left, whether the credential is autorenewable)
+ - **lifetime**:		 displays the lifetime that is left for the current credential (in seconds)
+ - **is_logged_in**:		 displays whether there is currently a valid credential
+ - **refresh**:		 forces an auto-refresh of the credential. only works for auto-renewable credentials
+ - **list_institutions**:	 displays a list of all available institutions (you wouldn't reallly need this command)
