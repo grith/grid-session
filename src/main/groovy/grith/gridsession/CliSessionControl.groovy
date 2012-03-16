@@ -73,6 +73,16 @@ class CliSessionControl {
 		return start()
 	}
 
+	public set_min_lifetime() {
+
+		def msg = 'Minimum lifetime in seconds: '
+		def secs = CliLogin.ask(msg, '259200')
+
+		def s = Integer.parseInt(secs)
+
+		return s
+	}
+
 	private start() {
 
 		def loginConf = [:]

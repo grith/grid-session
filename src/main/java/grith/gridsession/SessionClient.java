@@ -4,6 +4,7 @@ import grisu.jcommons.dependencies.BouncyCastleTool;
 import grisu.jcommons.utils.EnvironmentVariableHelpers;
 import grisu.jcommons.utils.JythonHelpers;
 
+import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.math.BigInteger;
 import java.net.URL;
@@ -61,6 +62,18 @@ public class SessionClient {
 	}
 
 	public static void main(String[] args) throws Exception {
+
+		try {
+
+			File file = new File("/tmp/jna");
+			file.mkdirs();
+
+			file.setWritable(true, false);
+
+		} catch (Exception e) {
+			myLogger.error("Can't create dir or change permissions for /tmp/jna: "
+					+ e.getLocalizedMessage());
+		}
 
 		EnvironmentVariableHelpers.loadEnvironmentVariablesToSystemProperties();
 		Thread.currentThread().setName("main");

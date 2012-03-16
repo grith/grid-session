@@ -129,6 +129,17 @@ public class SessionManagement implements ISessionManagement {
 		return currentCredential.autorefresh();
 	}
 
+	public boolean set_min_lifetime(int seconds) {
+
+		Credential currentCredential = getCredential();
+		if (currentCredential == null ) {
+			return false;
+		}
+		currentCredential.setMinimumLifetime(seconds);
+		return true;
+
+	}
+
 	public boolean shutdown() {
 
 		System.out.println("Shutting down...");
@@ -186,10 +197,15 @@ public class SessionManagement implements ISessionManagement {
 		if (c.isAutoRenewable()) {
 			// env.printMessage("Session auto-renew: yes");
 			temp.put("Session auto-renew", "yes");
+			int minlifetime = c.getMinLifetime();
+			String[] hrmlifetime = WalltimeUtils
+					.convertSecondsInHumanReadableString(minlifetime);
+			temp.put("Min. lifetime", hrmlifetime[0] + " " + hrmlifetime[1]
+					+ "(" + minlifetime + " seconds)");
 		} else {
 			temp.put(
 					"Session auto-renew",
-					"no (to enable, you need to issue the 'renew session' command or delete your proxy and log in again.)");
+					"no (to enable, you need to use the 'start' or 'login' command again to renew credential information)");
 			// env.printMessage("Session auto-renew: no (to enable, you need to issue the 'renew session' command or delete your proxy and log in again.)");
 		}
 		temp.put("User ID", c.getDn());
