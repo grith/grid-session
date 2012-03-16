@@ -129,7 +129,7 @@ public class SessionManagement implements ISessionManagement {
 		return currentCredential.autorefresh();
 	}
 
-	public boolean set_min_lifetime(int seconds) {
+	public boolean set_min_lifetime(Integer seconds) {
 
 		Credential currentCredential = getCredential();
 		if (currentCredential == null ) {
@@ -201,7 +201,7 @@ public class SessionManagement implements ISessionManagement {
 			String[] hrmlifetime = WalltimeUtils
 					.convertSecondsInHumanReadableString(minlifetime);
 			temp.put("Min. lifetime", hrmlifetime[0] + " " + hrmlifetime[1]
-					+ "(" + minlifetime + " seconds)");
+					+ " (" + minlifetime + " seconds)");
 		} else {
 			temp.put(
 					"Session auto-renew",

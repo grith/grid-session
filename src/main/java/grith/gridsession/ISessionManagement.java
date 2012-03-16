@@ -17,6 +17,8 @@ public interface ISessionManagement {
 
 	public boolean refresh();
 
+	public abstract boolean set_min_lifetime(Integer lt);
+
 	public abstract boolean shutdown();
 
 	public abstract Boolean start(Map<String, Object> config);
