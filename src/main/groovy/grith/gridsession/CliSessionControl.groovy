@@ -83,6 +83,17 @@ class CliSessionControl {
 		return s
 	}
 
+	public set_min_autorefresh() {
+
+		def msg = 'Minimum time inbetween autorefreshes (in seconds): '
+		def secs = CliLogin.ask(msg, '300')
+
+		def s = Integer.parseInt(secs)
+
+		return s
+	}
+
+
 	private start() {
 
 		def loginConf = [:]

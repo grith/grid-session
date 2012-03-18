@@ -17,6 +17,8 @@ public interface ISessionManagement {
 
 	public boolean refresh();
 
+	public boolean set_min_autorefresh(Integer seconds);
+
 	public abstract boolean set_min_lifetime(Integer lt);
 
 	public abstract boolean shutdown();

@@ -6,6 +6,8 @@ import grith.jgrith.control.SlcsLoginWrapper;
 import grith.jgrith.credential.Credential;
 import grith.jgrith.credential.Credential.PROPERTY;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +17,8 @@ import org.python.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SessionManagement implements ISessionManagement {
+public class SessionManagement implements ISessionManagement,
+PropertyChangeListener {
 
 	public static Logger myLogger = LoggerFactory
 			.getLogger(SessionManagement.class);
@@ -120,6 +123,28 @@ public class SessionManagement implements ISessionManagement {
 
 	}
 
+	public void propertyChange(PropertyChangeEvent evt) {
+
+		Object o = evt.getSource();
+
+		if (o instanceof Credential) {
+			Credential c = (Credential) o;
+
+			String propName = evt.getPropertyName();
+			if ("belowMinLifetime".equals(propName)) {
+				try {
+					Thread.sleep(5000);
+				} catch (Exception e) {
+				}
+				myLogger.debug("Kicking of auto-refresh of credential because min lifetime reached.");
+				status();
+
+			}
+
+		}
+
+	}
+
 	public boolean refresh() {
 		Credential currentCredential = getCredential();
 		if ((currentCredential == null) || !currentCredential.isAutoRenewable()) {
@@ -127,6 +152,18 @@ public class SessionManagement implements ISessionManagement {
 		}
 
 		return currentCredential.autorefresh();
+	}
+
+	public boolean set_min_autorefresh(Integer seconds) {
+		if ((seconds == null) || (seconds <= 0)) {
+			return false;
+		}
+		Credential currentCredential = getCredential();
+		if (currentCredential == null ) {
+			return false;
+		}
+		currentCredential.setMinTimeBetweenAutoRefreshes(seconds);
+		return true;
 	}
 
 	public boolean set_min_lifetime(Integer seconds) {
@@ -166,6 +203,12 @@ public class SessionManagement implements ISessionManagement {
 
 	public synchronized Boolean start(Map<String, Object> config) {
 
+		Credential c = getCredential();
+
+		if (c != null) {
+			c.removePropertyChangeListener(this);
+		}
+
 		Map<PROPERTY, Object> newMap = Maps.newHashMap();
 		for (Object key : config.keySet()) {
 			PROPERTY p = PROPERTY.valueOf((String) key);
@@ -176,6 +219,8 @@ public class SessionManagement implements ISessionManagement {
 		currentCredential.saveCredential(location);
 
 		setCredential(currentCredential);
+
+		currentCredential.addPropertyChangeListener(this);
 
 		return true;
 	}
