@@ -39,7 +39,8 @@ Possible commands:
 
  - **start**:			 kicks off the login process and runs the daemon in the background to auto-renew the credential whenever necessary
  - **stop**:	      	 destroys the credential and stops the daemon
- - **status**:			 displays information about the login state (lifetime left, whether the credential is autorenewable)
+ - **status**:			 displays information about the login state (lifetime left, whether the credential is auto-renewable)
+ - **set_min_lifetime**	 sets the minimum lifetime (in seconds) before auto-renewing a credential (if the credential supports auto-renew)
  - **lifetime**:		 displays the lifetime that is left for the current credential (in seconds)
  - **is_logged_in**:		 displays whether there is currently a valid credential
  - **refresh**:		 forces an auto-refresh of the credential. only works for auto-renewable credentials
