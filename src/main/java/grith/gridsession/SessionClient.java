@@ -38,9 +38,17 @@ public class SessionClient {
 		int tries = 0;
 		while (tries < 5) {
 			try {
-				SessionClient client = new SessionClient();
+				final SessionClient client = new SessionClient();
 				myLogger.debug("Executing command.");
-				client.getSessionManagement().status();
+				client.getSessionManagement().ping();
+
+				new Thread() {
+					@Override
+					public void run() {
+						client.getSessionManagement().list_institutions();
+					}
+				}.start();
+
 				return client;
 			} catch (UndeclaredThrowableException e) {
 				// e.printStackTrace();

@@ -123,6 +123,10 @@ PropertyChangeListener {
 
 	}
 
+	public String ping() {
+		return "ping";
+	}
+
 	public void propertyChange(PropertyChangeEvent evt) {
 
 		Object o = evt.getSource();
@@ -138,7 +142,7 @@ PropertyChangeListener {
 				}
 				myLogger.debug("Kicking of auto-refresh of credential because min lifetime reached.");
 				int tries = 0;
-				while (!refresh() || (tries < 5)) {
+				while (!refresh() && (tries < 5)) {
 					myLogger.debug("Auto-refresh of credential failed. Trying again in a minute.");
 					tries = tries + 1;
 					try {

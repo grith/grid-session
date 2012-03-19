@@ -15,6 +15,8 @@ public interface ISessionManagement {
 
 	public abstract void logout();
 
+	public String ping();
+
 	public boolean refresh();
 
 	public boolean set_min_autorefresh(Integer seconds);
