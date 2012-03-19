@@ -127,7 +127,7 @@ public class SessionClient {
 		config.setServerURL(new URL("https://127.0.0.1:" + port.getPort()
 				+ "/xmlrpc"));
 		config.setEnabledForExtensions(true);
-		config.setConnectionTimeout(60 * 1000);
+		config.setConnectionTimeout(80 * 1000);
 		config.setReplyTimeout(60 * 1000);
 		config.setBasicUserName(System.getProperty("user.name"));
 		RpcAuthToken t = new RpcAuthToken();

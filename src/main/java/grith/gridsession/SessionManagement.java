@@ -142,7 +142,7 @@ PropertyChangeListener {
 				}
 				myLogger.debug("Kicking of auto-refresh of credential because min lifetime reached.");
 				int tries = 0;
-				while (!refresh() && (tries < 5)) {
+				while (!c.autorefresh() && (tries < 5)) {
 					myLogger.debug("Auto-refresh of credential failed. Trying again in a minute.");
 					tries = tries + 1;
 					try {
@@ -152,6 +152,9 @@ PropertyChangeListener {
 				}
 				if (tries >= 5) {
 					myLogger.debug("Could not auto-refresh credential.");
+				} else {
+					myLogger.debug("Credential auto-refresh successful, new lifetime: "
+							+ c.getRemainingLifetime());
 				}
 
 			}
