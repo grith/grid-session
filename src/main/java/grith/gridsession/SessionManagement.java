@@ -137,7 +137,18 @@ PropertyChangeListener {
 				} catch (Exception e) {
 				}
 				myLogger.debug("Kicking of auto-refresh of credential because min lifetime reached.");
-				status();
+				int tries = 0;
+				while (!refresh() || (tries < 5)) {
+					myLogger.debug("Auto-refresh of credential failed. Trying again in a minute.");
+					tries = tries + 1;
+					try {
+						Thread.sleep(60000);
+					} catch (InterruptedException e) {
+					}
+				}
+				if (tries >= 5) {
+					myLogger.debug("Could not auto-refresh credential.");
+				}
 
 			}
 

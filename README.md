@@ -12,7 +12,7 @@ It is necessary to run as a daemon because otherwise it wouldn't be possible to 
 
 Because of this design, it is important that the control script and the daemon are sitting on the same host, otherwise a user password would sit in memory on a 3rd party machine and the user would loose control over it.
 
-To further strengthen security, the commonication happens via https where the daemon creates a self-signed certificate with every startup which is protected by a random (uuid-)token password that is stored on the filesystem and which only has read permissions for the user running the daemon/control-script. This way it is ensured that only the same local user can use the session daemon and also that only the local user who has read-access to the token and certificate files could possibly intercept the traffic between control script and daemon (which is important since the users IdP password is transferred).
+To further strengthen security, the communication happens via https where the daemon creates a self-signed certificate with every startup which is protected by a random (uuid-)token password that is stored on the filesystem and which only has read permissions for the user running the daemon/control-script. This way it is ensured that only the same local user can use the session daemon and also that only the local user who has read-access to the token and certificate files could possibly intercept the traffic between control script and daemon (which is important since the users IdP password is transferred).
 
 
 Download/Install
