@@ -82,7 +82,17 @@ PropertyChangeListener {
 		return cred;
 	}
 
-	/* (non-Javadoc)
+	public Boolean is_auto_renew() {
+		Credential currentCredential = getCredential();
+		if (currentCredential == null) {
+			return false;
+		}
+		return currentCredential.isAutoRenewable();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see grith.jgrith.session.ISessionManagement#isLoggedIn()
 	 */
 	public Boolean is_logged_in() {
@@ -113,6 +123,14 @@ PropertyChangeListener {
 		}
 	}
 
+	public String local_proxy_path() {
+		Credential c = getCredential();
+		if (c == null) {
+			return null;
+		}
+		return c.getLocalPath();
+	}
+
 	public synchronized Boolean login(Map<String, Object> config) {
 		return start(config);
 	}
@@ -121,6 +139,22 @@ PropertyChangeListener {
 
 		stop();
 
+	}
+
+	public String myproxy_password() {
+		Credential c = getCredential();
+		if (c == null) {
+			return null;
+		}
+		return new String(c.getMyProxyPassword());
+	}
+
+	public String myproxy_username() {
+		Credential c = getCredential();
+		if (c == null) {
+			return null;
+		}
+		return c.getMyProxyUsername();
 	}
 
 	public String ping() {
@@ -286,6 +320,23 @@ PropertyChangeListener {
 		}
 
 		shutdown();
+
+	}
+
+	public boolean upload() {
+
+		Credential c = getCredential();
+		if (c == null) {
+			return false;
+		}
+		try {
+			c.uploadMyProxy(true);
+			c.saveCredential();
+			return true;
+		} catch (Exception e) {
+			myLogger.error("Can't upload to myproxy: {}", e);
+			return false;
+		}
 
 	}
 

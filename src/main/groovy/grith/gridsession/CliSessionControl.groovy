@@ -6,8 +6,9 @@ import grisu.jcommons.dependencies.BouncyCastleTool
 import grisu.jcommons.view.cli.CliHelpers
 import grith.jgrith.credential.Credential
 import grith.jgrith.utils.CliLogin
+import groovy.util.logging.Slf4j
 
-
+@Slf4j
 class CliSessionControl {
 
 	public static void main(String[] args) {
@@ -25,15 +26,21 @@ class CliSessionControl {
 	private SessionClient client
 	private ISessionManagement sm
 
-	public CliSessionControl(boolean useLocalTransport) {
+	private boolean silent = false
+
+	public CliSessionControl(boolean useLocalTransport, boolean initSSL) {
 
 		if ( ! useLocalTransport ) {
-			this.client = SessionClient.create()
+			this.client = SessionClient.create(initSSL)
 			this.sm = client.getSessionManagement()
 		} else {
 			this.sm = new SessionManagement()
 			SessionManagement.kickOffIdpPreloading()
 		}
+	}
+
+	public SessionClient getSessionClient() {
+		return client
 	}
 
 	public void execute(def command) {
@@ -50,15 +57,18 @@ class CliSessionControl {
 			if ( args ) {
 				result = sm."$command"(args)
 			} else {
+				log.debug 'executing '+command
 				result = sm."$command"()
 			}
 		} catch (all) {
-			println 'Command failed: '+all.getLocalizedMessage()
+			println 'Command "'+command+ '" failed: '+all.getLocalizedMessage()
 			all.printStackTrace()
 			System.exit(1)
 		}
 
-		println result
+		if (! silent ) {
+			println result
+		}
 	}
 
 	private prepare(def command) {
@@ -91,6 +101,10 @@ class CliSessionControl {
 		def s = Integer.parseInt(secs)
 
 		return s
+	}
+
+	public setSilent(boolean silent) {
+		this.silent = silent
 	}
 
 

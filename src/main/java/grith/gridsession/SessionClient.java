@@ -33,12 +33,12 @@ public class SessionClient {
 	public static final Logger myLogger = LoggerFactory
 			.getLogger(SessionClient.class);
 
-	public static SessionClient create() {
+	public static SessionClient create(boolean initSSL) {
 
 		int tries = 0;
 		while (tries < 5) {
 			try {
-				final SessionClient client = new SessionClient();
+				final SessionClient client = new SessionClient(initSSL);
 				myLogger.debug("Executing command.");
 				client.getSessionManagement().ping();
 
@@ -51,8 +51,7 @@ public class SessionClient {
 
 				return client;
 			} catch (UndeclaredThrowableException e) {
-				// e.printStackTrace();
-				myLogger.debug("Could not execute command, trying again.");
+				myLogger.debug("Could not execute command, trying again.", e);
 				try {
 					Thread.sleep(500);
 				} catch (InterruptedException e1) {
@@ -96,7 +95,7 @@ public class SessionClient {
 
 			d.daemonize();
 
-			CliSessionControl control = new CliSessionControl(false);
+			CliSessionControl control = new CliSessionControl(false, true);
 
 			myLogger.debug("Executing command.");
 			control.execute(args[0]);
@@ -113,9 +112,11 @@ public class SessionClient {
 
 	private final BigInteger acceptedCertSerial;
 
-	public SessionClient() throws Exception {
+	public SessionClient(boolean initSSL) throws Exception {
 
-		initSSL();
+		if (initSSL) {
+			initSSL();
+		}
 
 		// create configuration
 		RpcAuthToken auth = new RpcAuthToken();

@@ -5,15 +5,23 @@ import java.util.Map;
 
 public interface ISessionManagement {
 
+	public Boolean is_auto_renew();
+
 	public abstract Boolean is_logged_in();
 
 	public int lifetime();
 
 	public abstract List<String> list_institutions();
 
+	public String local_proxy_path();
+
 	public abstract Boolean login(Map<String, Object> config);
 
 	public abstract void logout();
+
+	public String myproxy_password();
+
+	public String myproxy_username();
 
 	public String ping();
 
@@ -30,5 +38,7 @@ public interface ISessionManagement {
 	public abstract String status();
 
 	public abstract void stop();
+
+	public boolean upload();
 
 }
