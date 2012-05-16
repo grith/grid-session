@@ -1,5 +1,6 @@
 package grith.gridsession;
 
+import grisu.jcommons.constants.GridEnvironment;
 import grisu.jcommons.utils.OutputHelpers;
 import grisu.jcommons.utils.WalltimeUtils;
 import grith.jgrith.control.SlcsLoginWrapper;
@@ -325,6 +326,7 @@ PropertyChangeListener {
 
 	public boolean upload() {
 
+		myLogger.debug("Uploading credential");
 		Credential c = getCredential();
 		if (c == null) {
 			return false;
@@ -338,6 +340,24 @@ PropertyChangeListener {
 			return false;
 		}
 
+	}
+
+	public boolean upload(String myproxyhost) {
+
+		myLogger.debug("Uploading credential to " + myproxyhost);
+		Credential c = getCredential();
+		if (c == null) {
+			return false;
+		}
+		try {
+			c.uploadMyProxy(myproxyhost,
+					GridEnvironment.getDefaultMyProxyPort(), true);
+			c.saveCredential();
+			return true;
+		} catch (Exception e) {
+			myLogger.error("Can't upload to myproxy: {}", e);
+			return false;
+		}
 	}
 
 }

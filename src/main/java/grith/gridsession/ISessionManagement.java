@@ -41,4 +41,6 @@ public interface ISessionManagement {
 
 	public boolean upload();
 
+	public boolean upload(String myproxyhost);
+
 }

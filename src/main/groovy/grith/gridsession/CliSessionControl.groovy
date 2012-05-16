@@ -1,6 +1,7 @@
 package grith.gridsession
 
 import grisu.jcommons.configuration.CommonGridProperties
+import grisu.jcommons.constants.GridEnvironment
 import grisu.jcommons.constants.Enums.LoginType
 import grisu.jcommons.dependencies.BouncyCastleTool
 import grisu.jcommons.view.cli.CliHelpers
@@ -15,10 +16,11 @@ class CliSessionControl {
 
 		BouncyCastleTool.initBouncyCastle();
 
-		def control = new CliSessionControl(false)
+		def control = new CliSessionControl(false, true)
 
+		control.execute('upload myproxy.nesi.org.nz')
 
-		control.execute('list_institutions')
+		//		control.execute('list_institutions')
 
 		System.exit(0);
 	}
@@ -43,19 +45,22 @@ class CliSessionControl {
 		return client
 	}
 
-	public void execute(def command) {
+	public void execute(def commandline) {
 
+		def command = commandline.split()[0]
 		def result
-		def args
+		def args = commandline.split().drop(1)
 		try {
-			args = prepare(command)
+			args = prepare(command, args)
 		} catch (all) {
 			println 'Wrong syntax: '+command
 			System.exit(1)
 		}
 		try {
 			if ( args ) {
+				log.debug 'executing '+command +' with args '+args
 				result = sm."$command"(args)
+				log.debug 'executed '+command +' with args '+args
 			} else {
 				log.debug 'executing '+command
 				result = sm."$command"()
@@ -71,32 +76,40 @@ class CliSessionControl {
 		}
 	}
 
-	private prepare(def command) {
+	private prepare(def command, def args) {
 		try {
-			return this."$command"()
+			return this."$command"(args)
 		} catch (MissingMethodException e) {
 			return null
 		}
 	}
 
-	private login() {
-		return start()
+	private login(def args) {
+		return start(args)
 	}
 
-	public set_min_lifetime() {
+	public set_min_lifetime(def secs) {
 
-		def msg = 'Minimum lifetime in seconds: '
-		def secs = CliLogin.ask(msg, '259200')
+		if ( ! secs ) {
+			def msg = 'Minimum lifetime in seconds: '
+			secs = CliLogin.ask(msg, '259200')
+		} else {
+			secs = secs[0]
+		}
 
 		def s = Integer.parseInt(secs)
 
 		return s
 	}
 
-	public set_min_autorefresh() {
+	public set_min_autorefresh(def secs) {
 
-		def msg = 'Minimum time inbetween autorefreshes (in seconds): '
-		def secs = CliLogin.ask(msg, '300')
+		if (! secs ) {
+			def msg = 'Minimum time inbetween autorefreshes (in seconds): '
+			secs = CliLogin.ask(msg, '300')
+		} else {
+			secs = secs[0]
+		}
 
 		def s = Integer.parseInt(secs)
 
@@ -108,7 +121,7 @@ class CliSessionControl {
 	}
 
 
-	private start() {
+	private start(def args) {
 
 		def loginConf = [:]
 
@@ -198,5 +211,16 @@ class CliSessionControl {
 		loginConf[Credential.PROPERTY.StorePasswordInMemory.toString()] = true
 
 		return loginConf
+	}
+
+	private upload(def args) {
+		if (! args ) {
+			def msg = 'Please enter myproxy server to upload to'
+			args = CliLogin.ask(msg, GridEnvironment.getDefaultMyProxyServer())
+		} else {
+			args = args[0]
+		}
+
+		return args
 	}
 }
