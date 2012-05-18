@@ -83,6 +83,16 @@ PropertyChangeListener {
 		return cred;
 	}
 
+	public String group_proxy_path(String group) {
+		Credential c = getCredential();
+		if (c == null) {
+			return null;
+		}
+		Credential gc = c.getVomsCredential(group);
+		gc.saveCredential(c.getLocalPath() + "_" + group.replaceAll("/", "_"));
+		return gc.getLocalPath();
+	}
+
 	public Boolean is_auto_renew() {
 		Credential currentCredential = getCredential();
 		if (currentCredential == null) {
@@ -122,14 +132,6 @@ PropertyChangeListener {
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	public String local_proxy_path() {
-		Credential c = getCredential();
-		if (c == null) {
-			return null;
-		}
-		return c.getLocalPath();
 	}
 
 	public synchronized Boolean login(Map<String, Object> config) {
@@ -196,6 +198,14 @@ PropertyChangeListener {
 
 		}
 
+	}
+
+	public String proxy_path() {
+		Credential c = getCredential();
+		if (c == null) {
+			return null;
+		}
+		return c.getLocalPath();
 	}
 
 	public boolean refresh() {

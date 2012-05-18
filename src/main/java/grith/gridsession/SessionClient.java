@@ -98,7 +98,7 @@ public class SessionClient {
 			CliSessionControl control = new CliSessionControl(false, true);
 
 			myLogger.debug("Executing command.");
-			control.execute(args[0]);
+			control.execute(args);
 
 			System.exit(0);
 		}

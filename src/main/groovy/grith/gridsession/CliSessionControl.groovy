@@ -16,9 +16,11 @@ class CliSessionControl {
 
 		BouncyCastleTool.initBouncyCastle();
 
-		def control = new CliSessionControl(false, true)
+		def control = new CliSessionControl(true, true)
 
-		control.execute('upload myproxy.nesi.org.nz')
+		control.execute('start')
+
+		control.execute('group_proxy_path /nz/nesi')
 
 		//		control.execute('list_institutions')
 
@@ -45,11 +47,11 @@ class CliSessionControl {
 		return client
 	}
 
-	public void execute(def commandline) {
+	public void execute(String[] commandline) {
 
-		def command = commandline.split()[0]
+		def command = commandline[0]
 		def result
-		def args = commandline.split().drop(1)
+		def args = commandline.drop(1)
 		try {
 			args = prepare(command, args)
 		} catch (all) {
@@ -100,6 +102,16 @@ class CliSessionControl {
 		def s = Integer.parseInt(secs)
 
 		return s
+	}
+
+	public group_proxy_path(def group) {
+		if (! group) {
+			def msg = 'Group you want the proxy for: '
+			group = CliLogin.ask(msg)
+		} else {
+			group = group[0]
+		}
+		return group
 	}
 
 	public set_min_autorefresh(def secs) {

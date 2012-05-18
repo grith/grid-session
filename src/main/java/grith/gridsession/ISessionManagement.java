@@ -5,6 +5,8 @@ import java.util.Map;
 
 public interface ISessionManagement {
 
+	public String group_proxy_path(String group);
+
 	public Boolean is_auto_renew();
 
 	public abstract Boolean is_logged_in();
@@ -12,8 +14,6 @@ public interface ISessionManagement {
 	public int lifetime();
 
 	public abstract List<String> list_institutions();
-
-	public String local_proxy_path();
 
 	public abstract Boolean login(Map<String, Object> config);
 
@@ -24,6 +24,8 @@ public interface ISessionManagement {
 	public String myproxy_username();
 
 	public String ping();
+
+	public String proxy_path();
 
 	public boolean refresh();
 
