@@ -7,7 +7,7 @@ public interface ISessionManagement {
 
 	public String group_proxy_path(String group);
 
-	public Boolean is_auto_renew();
+	// public Boolean is_auto_renew();
 
 	public abstract Boolean is_logged_in();
 
@@ -27,9 +27,9 @@ public interface ISessionManagement {
 
 	public String proxy_path();
 
-	public boolean refresh();
+	public void refresh();
 
-	public boolean set_min_autorefresh(Integer seconds);
+	// public boolean set_min_autorefresh(Integer seconds);
 
 	public abstract boolean set_min_lifetime(Integer lt);
 

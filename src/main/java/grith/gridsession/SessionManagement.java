@@ -1,9 +1,9 @@
 package grith.gridsession;
 
-import grisu.jcommons.constants.GridEnvironment;
 import grisu.jcommons.utils.OutputHelpers;
 import grisu.jcommons.utils.WalltimeUtils;
 import grith.jgrith.control.SlcsLoginWrapper;
+import grith.jgrith.cred.AbstractCred;
 import grith.jgrith.credential.Credential;
 import grith.jgrith.credential.Credential.PROPERTY;
 
@@ -24,7 +24,25 @@ PropertyChangeListener {
 	public static Logger myLogger = LoggerFactory
 			.getLogger(SessionManagement.class);
 
-	private static Credential cred = null;
+	private static AbstractCred cred = null;
+
+	private static synchronized AbstractCred getCredential() {
+
+
+		if ( (cred == null) || !cred.isValid() ) {
+			myLogger.debug("No valid credential.");
+			cred = null;
+		}
+		// try {
+		// cred = Credential.load(location);
+		// } catch (Exception e) {
+		// myLogger.debug("Error loading credential: "
+		// + e.getLocalizedMessage());
+		// return null;
+		// }
+		// }
+		return cred;
+	}
 
 	public static void kickOffIdpPreloading() {
 
@@ -46,10 +64,6 @@ PropertyChangeListener {
 
 	}
 
-	private static synchronized void setCredential(Credential c) {
-		cred = c;
-	}
-
 
 
 	private final String location;
@@ -69,36 +83,19 @@ PropertyChangeListener {
 		getCredential();
 	}
 
-	private synchronized Credential getCredential() {
-
-		if ( (cred == null) || !cred.isValid() ) {
-			try {
-				cred = Credential.load(location);
-			} catch (Exception e) {
-				myLogger.debug("Error loading credential: "
-						+ e.getLocalizedMessage());
-				return null;
-			}
-		}
-		return cred;
-	}
-
 	public String group_proxy_path(String group) {
-		Credential c = getCredential();
+		AbstractCred c = getCredential();
 		if (c == null) {
 			return null;
 		}
-		Credential gc = c.getVomsCredential(group);
-		gc.saveCredential(c.getLocalPath() + "_" + group.replaceAll("/", "_"));
-		return gc.getLocalPath();
-	}
 
-	public Boolean is_auto_renew() {
-		Credential currentCredential = getCredential();
-		if (currentCredential == null) {
-			return false;
+		String path = c.getGroupProxyPath(group);
+		if (StringUtils.isBlank(path)) {
+			c.saveGroupProxy(group);
 		}
-		return currentCredential.isAutoRenewable();
+
+		return c.getGroupProxyPath(group);
+
 	}
 
 	/*
@@ -108,7 +105,7 @@ PropertyChangeListener {
 	 */
 	public Boolean is_logged_in() {
 
-		Credential currentCredential = getCredential();
+		AbstractCred currentCredential = getCredential();
 		if (currentCredential == null) {
 			return false;
 		}
@@ -117,7 +114,7 @@ PropertyChangeListener {
 
 	public int lifetime() {
 
-		Credential currentCredential = getCredential();
+		AbstractCred currentCredential = getCredential();
 
 		if ( currentCredential == null ) {
 			return 0;
@@ -145,18 +142,20 @@ PropertyChangeListener {
 	}
 
 	public String myproxy_password() {
-		Credential c = getCredential();
+		AbstractCred c = getCredential();
 		if (c == null) {
 			return null;
 		}
+		c.uploadMyProxy(false);
 		return new String(c.getMyProxyPassword());
 	}
 
 	public String myproxy_username() {
-		Credential c = getCredential();
+		AbstractCred c = getCredential();
 		if (c == null) {
 			return null;
 		}
+		c.uploadMyProxy(false);
 		return c.getMyProxyUsername();
 	}
 
@@ -201,43 +200,47 @@ PropertyChangeListener {
 	}
 
 	public String proxy_path() {
-		Credential c = getCredential();
+		AbstractCred c = getCredential();
 		if (c == null) {
 			return null;
 		}
-		return c.getLocalPath();
+		if (StringUtils.isBlank(c.getProxyPath())) {
+			c.saveProxy();
+		}
+		return c.getProxyPath();
 	}
 
-	public boolean refresh() {
-		Credential currentCredential = getCredential();
-		if ((currentCredential == null) || !currentCredential.isAutoRenewable()) {
-			return false;
-		}
+	public void refresh() {
+		AbstractCred currentCredential = getCredential();
 
-		return currentCredential.autorefresh();
+		currentCredential.refresh();
 	}
 
-	public boolean set_min_autorefresh(Integer seconds) {
-		if ((seconds == null) || (seconds <= 0)) {
-			return false;
-		}
-		Credential currentCredential = getCredential();
-		if (currentCredential == null ) {
-			return false;
-		}
-		currentCredential.setMinTimeBetweenAutoRefreshes(seconds);
-		return true;
-	}
+	// public boolean set_min_autorefresh(Integer seconds) {
+	// if ((seconds == null) || (seconds <= 0)) {
+	// return false;
+	// }
+	// AbstractCred currentCredential = getCredential();
+	// if (currentCredential == null ) {
+	// return false;
+	// }
+	// currentCredential.setMinTimeBetweenAutoRefreshes(seconds);
+	// return true;
+	// }
 
 	public boolean set_min_lifetime(Integer seconds) {
 
-		Credential currentCredential = getCredential();
+		AbstractCred currentCredential = getCredential();
 		if (currentCredential == null ) {
 			return false;
 		}
 		currentCredential.setMinimumLifetime(seconds);
 		return true;
 
+	}
+
+	private synchronized void setCredential(AbstractCred c) {
+		cred = c;
 	}
 
 	public boolean shutdown() {
@@ -266,7 +269,7 @@ PropertyChangeListener {
 
 	public synchronized Boolean start(Map<String, Object> config) {
 
-		Credential c = getCredential();
+		AbstractCred c = getCredential();
 
 		if (c != null) {
 			c.removePropertyChangeListener(this);
@@ -278,8 +281,7 @@ PropertyChangeListener {
 			newMap.put(p, config.get(key));
 		}
 
-		Credential currentCredential = Credential.loadFromConfig(newMap, true);
-		currentCredential.saveCredential(location);
+		AbstractCred currentCredential = AbstractCred.loadFromConfig(newMap);
 
 		setCredential(currentCredential);
 
@@ -294,7 +296,7 @@ PropertyChangeListener {
 			return "Not logged in";
 		}
 		int remaining = lifetime();
-		Credential c = getCredential();
+		AbstractCred c = getCredential();
 
 		Map<String, String> temp = Maps.newLinkedHashMap();
 		String[] remainingString = WalltimeUtils
@@ -302,21 +304,14 @@ PropertyChangeListener {
 		temp.put("Remaining session lifetime", remainingString[0] + " "
 				+ remainingString[1] + " (" + remaining + " seconds)");
 
-		if (c.isAutoRenewable()) {
-			// env.printMessage("Session auto-renew: yes");
-			temp.put("Session auto-renew", "yes");
-			int minlifetime = c.getMinLifetime();
-			String[] hrmlifetime = WalltimeUtils
-					.convertSecondsInHumanReadableString(minlifetime);
-			temp.put("Min. lifetime", hrmlifetime[0] + " " + hrmlifetime[1]
-					+ " (" + minlifetime + " seconds)");
-		} else {
-			temp.put(
-					"Session auto-renew",
-					"no (to enable, you need to use the 'start' or 'login' command again to renew credential information)");
-			// env.printMessage("Session auto-renew: no (to enable, you need to issue the 'renew session' command or delete your proxy and log in again.)");
-		}
-		temp.put("User ID", c.getDn());
+		int minlifetime = c.getMinimumLifetime();
+		String[] hrmlifetime = WalltimeUtils
+				.convertSecondsInHumanReadableString(minlifetime);
+		temp.put("Min. lifetime before renew", hrmlifetime[0] + " "
+				+ hrmlifetime[1]
+				+ " (" + minlifetime + " seconds)");
+
+		temp.put("User ID", c.getDN());
 
 		String output = OutputHelpers.getTable(temp);
 		return output;
@@ -324,7 +319,7 @@ PropertyChangeListener {
 
 	public void stop() {
 
-		Credential currentCredential = getCredential();
+		AbstractCred currentCredential = getCredential();
 
 		if (currentCredential != null) {
 			currentCredential.destroy();
@@ -337,13 +332,12 @@ PropertyChangeListener {
 	public boolean upload() {
 
 		myLogger.debug("Uploading credential");
-		Credential c = getCredential();
+		AbstractCred c = getCredential();
 		if (c == null) {
 			return false;
 		}
 		try {
 			c.uploadMyProxy(true);
-			c.saveCredential();
 			return true;
 		} catch (Exception e) {
 			myLogger.error("Can't upload to myproxy: {}", e);
@@ -355,14 +349,13 @@ PropertyChangeListener {
 	public boolean upload(String myproxyhost) {
 
 		myLogger.debug("Uploading credential to " + myproxyhost);
-		Credential c = getCredential();
+		AbstractCred c = getCredential();
 		if (c == null) {
 			return false;
 		}
+		c.setMyProxyHost(myproxyhost);
 		try {
-			c.uploadMyProxy(myproxyhost,
-					GridEnvironment.getDefaultMyProxyPort(), true);
-			c.saveCredential();
+			c.uploadMyProxy(true);
 			return true;
 		} catch (Exception e) {
 			myLogger.error("Can't upload to myproxy: {}", e);

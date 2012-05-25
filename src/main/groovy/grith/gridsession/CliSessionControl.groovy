@@ -20,9 +20,12 @@ class CliSessionControl {
 
 		control.execute('start')
 
-		control.execute('group_proxy_path /nz/nesi')
+		control.execute([
+			'group_proxy_path',
+			'/nz/nesi'
+		])
 
-		//		control.execute('list_institutions')
+		control.execute('status')
 
 		System.exit(0);
 	}
@@ -48,6 +51,10 @@ class CliSessionControl {
 	}
 
 	public void execute(String[] commandline) {
+		execute(Arrays.asList(commandline))
+	}
+
+	public void execute(List<String> commandline) {
 
 		def command = commandline[0]
 		def result
@@ -60,9 +67,9 @@ class CliSessionControl {
 		}
 		try {
 			if ( args ) {
-				log.debug 'executing '+command +' with args '+args
+				log.debug 'executing '+command +' with args'
 				result = sm."$command"(args)
-				log.debug 'executed '+command +' with args '+args
+				log.debug 'executed '+command +' with args'
 			} else {
 				log.debug 'executing '+command
 				result = sm."$command"()
