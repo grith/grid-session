@@ -5,9 +5,13 @@ import java.util.Map;
 
 public interface ISessionManagement {
 
-	public String group_proxy_path(String group);
+	public abstract void destroy();
 
 	// public Boolean is_auto_renew();
+
+	public abstract String dn();
+
+	public String group_proxy_path(String group);
 
 	public abstract Boolean is_logged_in();
 
@@ -19,19 +23,27 @@ public interface ISessionManagement {
 
 	public abstract void logout();
 
+	public abstract String myproxy_host();
+
 	public String myproxy_password();
+
+	public abstract int myproxy_port();
 
 	public String myproxy_username();
 
 	public String ping();
 
-	public String proxy_path();
-
-	public void refresh();
-
 	// public boolean set_min_autorefresh(Integer seconds);
 
+	public String proxy_path();
+
+	public boolean refresh();
+
 	public abstract boolean set_min_lifetime(Integer lt);
+
+	public abstract void set_myProxy_host(String myProxyServer);
+
+	public abstract void set_myProxy_port(int port);
 
 	public abstract boolean shutdown();
 

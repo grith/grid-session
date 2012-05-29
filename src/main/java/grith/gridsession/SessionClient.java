@@ -5,6 +5,7 @@ import grisu.jcommons.utils.EnvironmentVariableHelpers;
 import grisu.jcommons.utils.JythonHelpers;
 
 import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.math.BigInteger;
 import java.net.URL;
@@ -26,13 +27,15 @@ import org.apache.xmlrpc.client.util.ClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+
 import com.sun.akuma.Daemon;
 
 public class SessionClient {
 
 	public static final Logger myLogger = LoggerFactory
 			.getLogger(SessionClient.class);
-
 	public static SessionClient create(boolean initSSL) {
 
 		int tries = 0;
@@ -51,7 +54,7 @@ public class SessionClient {
 
 				return client;
 			} catch (UndeclaredThrowableException e) {
-				myLogger.debug("Could not execute command, trying again.", e);
+				myLogger.debug("Could not execute command, trying again.");
 				try {
 					Thread.sleep(500);
 				} catch (InterruptedException e1) {
@@ -67,6 +70,8 @@ public class SessionClient {
 		throw new RuntimeException("Could not create session-client.");
 
 	}
+
+
 
 	public static void main(String[] args) throws Exception {
 
@@ -103,7 +108,16 @@ public class SessionClient {
 			System.exit(0);
 		}
 
+		LoggerContext context = (LoggerContext) LoggerFactory
+				.getILoggerFactory();
+		JoranConfigurator configurator = new JoranConfigurator();
+		configurator.setContext(context);
+
+		InputStream config = SessionClient.class.getResourceAsStream("/logback_server.xml");
+		configurator.doConfigure(config);
+
 		// make sure server is started...
+		BouncyCastleTool.initBouncyCastle(true);
 		TinySessionServer server = new TinySessionServer();
 
 	}
@@ -113,6 +127,8 @@ public class SessionClient {
 	private final BigInteger acceptedCertSerial;
 
 	public SessionClient(boolean initSSL) throws Exception {
+
+		BouncyCastleTool.initBouncyCastle();
 
 		if (initSSL) {
 			initSSL();

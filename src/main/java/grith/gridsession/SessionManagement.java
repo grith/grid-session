@@ -4,6 +4,7 @@ import grisu.jcommons.utils.OutputHelpers;
 import grisu.jcommons.utils.WalltimeUtils;
 import grith.jgrith.control.SlcsLoginWrapper;
 import grith.jgrith.cred.AbstractCred;
+import grith.jgrith.cred.Cred;
 import grith.jgrith.credential.Credential;
 import grith.jgrith.credential.Credential.PROPERTY;
 
@@ -75,12 +76,32 @@ PropertyChangeListener {
 	}
 
 	public SessionManagement(String location) {
+
 		if (StringUtils.isBlank(location)) {
 			this.location = CoGProperties.getDefault().getProxyFile();
 		} else {
 			this.location = location;
 		}
 		getCredential();
+	}
+
+	public void destroy() {
+
+		myLogger.debug("Uploading credential");
+		Cred c = getCredential();
+		if (c == null) {
+			return;
+		}
+		c.destroy();
+
+	}
+
+	public String dn() {
+		Cred c = getCredential();
+		if (c == null) {
+			return null;
+		}
+		return c.getDN();
 	}
 
 	public String group_proxy_path(String group) {
@@ -105,7 +126,7 @@ PropertyChangeListener {
 	 */
 	public Boolean is_logged_in() {
 
-		AbstractCred currentCredential = getCredential();
+		Cred currentCredential = getCredential();
 		if (currentCredential == null) {
 			return false;
 		}
@@ -114,7 +135,7 @@ PropertyChangeListener {
 
 	public int lifetime() {
 
-		AbstractCred currentCredential = getCredential();
+		Cred currentCredential = getCredential();
 
 		if ( currentCredential == null ) {
 			return 0;
@@ -137,7 +158,23 @@ PropertyChangeListener {
 
 	public void logout() {
 
-		stop();
+		Cred currentCredential = getCredential();
+
+		if (currentCredential != null) {
+			currentCredential.destroy();
+		}
+		cred = null;
+
+	}
+
+	public String myproxy_host() {
+
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return null;
+		}
+		c.uploadMyProxy(false);
+		return c.getMyProxyHost();
 
 	}
 
@@ -150,6 +187,16 @@ PropertyChangeListener {
 		return new String(c.getMyProxyPassword());
 	}
 
+	public int myproxy_port() {
+		myLogger.debug("myproxy port");
+		Cred c = getCredential();
+		if (c == null) {
+			return -1;
+		}
+
+		return c.getMyProxyPort();
+	}
+
 	public String myproxy_username() {
 		AbstractCred c = getCredential();
 		if (c == null) {
@@ -158,6 +205,18 @@ PropertyChangeListener {
 		c.uploadMyProxy(false);
 		return c.getMyProxyUsername();
 	}
+
+	// public boolean set_min_autorefresh(Integer seconds) {
+	// if ((seconds == null) || (seconds <= 0)) {
+	// return false;
+	// }
+	// AbstractCred currentCredential = getCredential();
+	// if (currentCredential == null ) {
+	// return false;
+	// }
+	// currentCredential.setMinTimeBetweenAutoRefreshes(seconds);
+	// return true;
+	// }
 
 	public String ping() {
 		return "ping";
@@ -210,23 +269,11 @@ PropertyChangeListener {
 		return c.getProxyPath();
 	}
 
-	public void refresh() {
+	public boolean refresh() {
 		AbstractCred currentCredential = getCredential();
 
-		currentCredential.refresh();
+		return currentCredential.refresh();
 	}
-
-	// public boolean set_min_autorefresh(Integer seconds) {
-	// if ((seconds == null) || (seconds <= 0)) {
-	// return false;
-	// }
-	// AbstractCred currentCredential = getCredential();
-	// if (currentCredential == null ) {
-	// return false;
-	// }
-	// currentCredential.setMinTimeBetweenAutoRefreshes(seconds);
-	// return true;
-	// }
 
 	public boolean set_min_lifetime(Integer seconds) {
 
@@ -237,6 +284,28 @@ PropertyChangeListener {
 		currentCredential.setMinimumLifetime(seconds);
 		return true;
 
+	}
+
+	public void set_myProxy_host(String myProxyServer) {
+		myLogger.debug("Setting myproxy host");
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return;
+		}
+
+		c.setMyProxyHost(myProxyServer);
+
+	}
+
+	public void set_myProxy_port(int port) {
+
+		myLogger.debug("Setting myproxy host");
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return;
+		}
+
+		c.setMyProxyPort(port);
 	}
 
 	private synchronized void setCredential(AbstractCred c) {
@@ -309,7 +378,7 @@ PropertyChangeListener {
 				.convertSecondsInHumanReadableString(minlifetime);
 		temp.put("Min. lifetime before renew", hrmlifetime[0] + " "
 				+ hrmlifetime[1]
-				+ " (" + minlifetime + " seconds)");
+						+ " (" + minlifetime + " seconds)");
 
 		temp.put("User ID", c.getDN());
 
@@ -319,7 +388,7 @@ PropertyChangeListener {
 
 	public void stop() {
 
-		AbstractCred currentCredential = getCredential();
+		Cred currentCredential = getCredential();
 
 		if (currentCredential != null) {
 			currentCredential.destroy();
@@ -332,12 +401,12 @@ PropertyChangeListener {
 	public boolean upload() {
 
 		myLogger.debug("Uploading credential");
-		AbstractCred c = getCredential();
+		Cred c = getCredential();
 		if (c == null) {
 			return false;
 		}
 		try {
-			c.uploadMyProxy(true);
+			c.uploadMyProxy();
 			return true;
 		} catch (Exception e) {
 			myLogger.error("Can't upload to myproxy: {}", e);

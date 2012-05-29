@@ -1,7 +1,7 @@
 #!/bin/bash
 
 unset DISPLAY
-export JAVA_OPTS="-Djava.awt.headless=true -Xmx16m"
+export JAVA_OPTS="-Djava.awt.headless=true -Xmx24m"
 export X509_USER_PROXY=~/.grisu/grisu.proxy
 java ${JAVA_OPTS} -jar /usr/local/lib/grisu/grid-session-bin.jar $@
 

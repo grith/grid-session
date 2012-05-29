@@ -5,7 +5,7 @@
 
 
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>${user.home}/.grid/grid-session.debug</file>
+    <file>${user.home}/.grid/grid-session-server.debug</file>
     <append>true</append>
     <!-- encoders are assigned the type
          ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->

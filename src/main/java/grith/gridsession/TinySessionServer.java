@@ -50,6 +50,7 @@ public class TinySessionServer implements ISessionServer {
 
 	public TinySessionServer() throws Exception {
 
+
 		try {
 			port = new RpcPort();
 
@@ -57,6 +58,7 @@ public class TinySessionServer implements ISessionServer {
 			ServerSocket s = new ServerSocket(port.getPort());
 			s.close();
 
+			BouncyCastleTool.initBouncyCastle();
 			// delete all old rpc-related things
 			FileUtils.deleteQuietly(RPCKeyStore.KEYSTORE_FILE);
 			FileUtils.deleteQuietly(RpcAuthToken.TOKEN_FILE);

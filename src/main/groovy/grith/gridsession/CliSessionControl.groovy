@@ -27,6 +27,10 @@ class CliSessionControl {
 
 		control.execute('status')
 
+		control.execute('upload')
+
+		System.out.println('un: '+control.execute('myproxy_username'))
+
 		System.exit(0);
 	}
 
