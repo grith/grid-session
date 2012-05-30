@@ -36,7 +36,10 @@ public class SessionClient {
 
 	public static final Logger myLogger = LoggerFactory
 			.getLogger(SessionClient.class);
-	public static SessionClient create(boolean initSSL) {
+
+	private static volatile boolean triedInit = false;
+
+	private static SessionClient create(boolean initSSL) {
 
 		int tries = 0;
 		while (tries < 5) {
@@ -71,6 +74,17 @@ public class SessionClient {
 
 	}
 
+	public static SessionClient getDefault() {
+		return getDefault(false);
+	}
+
+	public static synchronized SessionClient getDefault(boolean initSSL) {
+		if ( singleton == null ) {
+			singleton = create(initSSL);
+			triedInit = true;
+		}
+		return singleton;
+	}
 
 
 	public static void main(String[] args) throws Exception {
@@ -126,7 +140,9 @@ public class SessionClient {
 
 	private final BigInteger acceptedCertSerial;
 
-	public SessionClient(boolean initSSL) throws Exception {
+	private static SessionClient singleton = null;
+
+	private SessionClient(boolean initSSL) throws Exception {
 
 		BouncyCastleTool.initBouncyCastle();
 

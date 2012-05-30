@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.net.BindException;
 import java.net.ServerSocket;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ import com.sun.akuma.JavaVMArguments;
 
 public class GridClient {
 
-	public static void execute(GridClient client) {
+	public static void execute(GridClient client, boolean useSSL) {
 
 		if (CommonGridProperties.getDefault().useGridSession()) {
 
@@ -90,6 +91,21 @@ public class GridClient {
 					}
 					d.daemonize(args);
 
+					// check whether we can actually connect to grid-session service...
+					SessionClient sc = SessionClient.getDefault(useSSL);
+					String ping = null;
+					if (sc != null) {
+						ping = sc.getSessionManagement().ping();
+					}
+
+					if (StringUtils.isBlank(ping)) {
+						myLogger.error("Session client can't be reached, disabling use of grid session.");
+						System.setProperty(
+								CommonGridProperties.Property.USE_GRID_SESSION
+								.toString(), "false");
+
+					}
+
 					myLogger.debug("Starting grid-session client");
 					client.run();
 
@@ -136,7 +152,7 @@ public class GridClient {
 
 		GridClient client = new GridClient();
 
-		execute(client);
+		execute(client, true);
 
 	}
 
@@ -161,7 +177,7 @@ public class GridClient {
 
 		if (session == null) {
 			if (!isUseLocalTransport()) {
-				SessionClient client = SessionClient.create(isUseSSL());
+				SessionClient client = SessionClient.getDefault(isUseSSL());
 				this.session = client.getSessionManagement();
 			} else {
 				this.session = new SessionManagement();
