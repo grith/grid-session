@@ -79,9 +79,9 @@ public class SessionClient {
 	}
 
 	public static synchronized SessionClient getDefault(boolean initSSL) {
-		if ( singleton == null ) {
-			singleton = create(initSSL);
+		if ((singleton == null) && !triedInit) {
 			triedInit = true;
+			singleton = create(initSSL);
 		}
 		return singleton;
 	}
