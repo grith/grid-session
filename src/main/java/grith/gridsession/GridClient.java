@@ -92,10 +92,14 @@ public class GridClient {
 					d.daemonize(args);
 
 					// check whether we can actually connect to grid-session service...
-					SessionClient sc = SessionClient.getDefault(useSSL);
 					String ping = null;
-					if (sc != null) {
-						ping = sc.getSessionManagement().ping();
+					try {
+						SessionClient sc = SessionClient.getDefault(useSSL);
+						if (sc != null) {
+							ping = sc.getSessionManagement().ping();
+						}
+					} catch (Exception e) {
+						myLogger.error("Error when trying to ping grid session.");
 					}
 
 					if (StringUtils.isBlank(ping)) {
