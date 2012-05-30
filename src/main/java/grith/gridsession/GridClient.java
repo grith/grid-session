@@ -53,9 +53,8 @@ public class GridClient {
 					// that's good, means something already running, we don't
 					// need to try to daemonize...
 					myLogger.debug("Starting grid-session client");
-					client.execute();
-
-					System.exit(0);
+					client.run();
+					return;
 				}
 
 				if (d.isDaemonized()) {
@@ -92,9 +91,9 @@ public class GridClient {
 					d.daemonize(args);
 
 					myLogger.debug("Starting grid-session client");
-					client.execute();
+					client.run();
 
-					System.exit(0);
+					return;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -119,6 +118,7 @@ public class GridClient {
 			myLogger.debug("Starting grid-session service...");
 
 			try {
+				BouncyCastleTool.initBouncyCastle();
 				TinySessionServer server = new TinySessionServer();
 			} catch (Exception e) {
 				myLogger.error(
@@ -127,7 +127,7 @@ public class GridClient {
 				System.exit(1);
 			}
 		} else {
-			client.execute();
+			client.run();
 		}
 
 	}
