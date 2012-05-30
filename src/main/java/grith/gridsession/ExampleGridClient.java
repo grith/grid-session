@@ -5,7 +5,7 @@ public class ExampleGridClient extends GridClient {
 	public static void main(String[] args) {
 
 		ExampleGridClient egc = new ExampleGridClient();
-		execute(egc);
+		execute(egc, true);
 
 	}
 

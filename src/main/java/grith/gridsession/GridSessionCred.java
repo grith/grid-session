@@ -48,7 +48,7 @@ public class GridSessionCred implements Cred {
 
 	public GridSessionCred(boolean initSSL) {
 		try {
-			this.session = SessionClient.create(initSSL);
+			this.session = SessionClient.getDefault(initSSL);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new CredentialException("Could not create session cred: "
