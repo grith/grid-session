@@ -7,14 +7,48 @@ import grith.jgrith.credential.Credential.PROPERTY;
 import java.util.Map;
 
 import org.python.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GridSessionCred implements Cred {
+
+	private static GridSessionCred cred;
+
+	static final Logger myLogger = LoggerFactory
+			.getLogger(GridSessionCred.class.getName());
+
+	public static synchronized GridSessionCred getExistingSession() {
+		if ( cred == null ) {
+			try {
+				cred = new GridSessionCred();
+			} catch (Exception e) {
+				myLogger.debug("Can't retieve GridSessionCred: {}",
+						e.getLocalizedMessage());
+				return null;
+			}
+
+		}
+		return cred;
+	}
+
+	public static synchronized boolean validSessionExists() {
+
+		GridSessionCred c = getExistingSession();
+		if (c == null) {
+			return false;
+		}
+		return c.isValid();
+	}
 
 	private final SessionClient session;
 
 	public GridSessionCred() {
+		this(false);
+	}
+
+	public GridSessionCred(boolean initSSL) {
 		try {
-			this.session = SessionClient.create(false);
+			this.session = SessionClient.create(initSSL);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new CredentialException("Could not create session cred: "
@@ -24,6 +58,11 @@ public class GridSessionCred implements Cred {
 
 	public GridSessionCred(Map<PROPERTY, Object> config) {
 		this();
+		init(config);
+	}
+
+	public GridSessionCred(Map<PROPERTY, Object> config, boolean useSSL) {
+		this(useSSL);
 		init(config);
 	}
 

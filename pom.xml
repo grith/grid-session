@@ -75,6 +75,12 @@
 			<artifactId>jna</artifactId>
 			<version>3.4.0-fix</version>
 		</dependency>
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>jgoodiesforms</artifactId>
+			<version>1.5.1</version>
+			<scope>provided</scope>
+		</dependency>
   </dependencies>
   
 	<build>

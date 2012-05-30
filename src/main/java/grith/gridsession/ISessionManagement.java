@@ -5,9 +5,11 @@ import java.util.Map;
 
 public interface ISessionManagement {
 
-	public abstract void destroy();
+	public String credential_type();
 
 	// public Boolean is_auto_renew();
+
+	public abstract void destroy();
 
 	public abstract String dn();
 

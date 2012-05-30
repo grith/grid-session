@@ -1,10 +1,15 @@
 package grith.gridsession;
 
+import grisu.jcommons.constants.Enums.LoginType;
+import grisu.jcommons.exceptions.CredentialException;
 import grisu.jcommons.utils.OutputHelpers;
 import grisu.jcommons.utils.WalltimeUtils;
 import grith.jgrith.control.SlcsLoginWrapper;
 import grith.jgrith.cred.AbstractCred;
 import grith.jgrith.cred.Cred;
+import grith.jgrith.cred.MyProxyCred;
+import grith.jgrith.cred.SLCSCred;
+import grith.jgrith.cred.X509Cred;
 import grith.jgrith.credential.Credential;
 import grith.jgrith.credential.Credential.PROPERTY;
 
@@ -14,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.globus.common.CoGProperties;
 import org.python.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +30,8 @@ PropertyChangeListener {
 			.getLogger(SessionManagement.class);
 
 	private static AbstractCred cred = null;
+
+	public static ISessionServer server;
 
 	private static synchronized AbstractCred getCredential() {
 
@@ -67,22 +73,38 @@ PropertyChangeListener {
 
 
 
-	private final String location;
-
-	public static ISessionServer server;
-
 	public SessionManagement() {
-		this(null);
 	}
 
-	public SessionManagement(String location) {
+	// public SessionManagement(String location) {
+	//
+	// if (StringUtils.isBlank(location)) {
+	// this.location = CoGProperties.getDefault().getProxyFile();
+	// } else {
+	// this.location = location;
+	// }
+	// getCredential();
+	// }
 
-		if (StringUtils.isBlank(location)) {
-			this.location = CoGProperties.getDefault().getProxyFile();
-		} else {
-			this.location = location;
+	public String credential_type() {
+
+		Cred c = getCredential();
+		if (c == null) {
+			return null;
 		}
-		getCredential();
+
+
+		if (c instanceof SLCSCred) {
+			return LoginType.SHIBBOLETH.toString();
+		} else if (c instanceof MyProxyCred) {
+			return LoginType.MYPROXY.toString();
+		} else if (c instanceof X509Cred) {
+			return LoginType.X509_CERTIFICATE.toString();
+		} else {
+			throw new CredentialException("Unknown credential type: "
+					+ c.getClass().getSimpleName());
+		}
+
 	}
 
 	public void destroy() {
@@ -197,15 +219,6 @@ PropertyChangeListener {
 		return c.getMyProxyPort();
 	}
 
-	public String myproxy_username() {
-		AbstractCred c = getCredential();
-		if (c == null) {
-			return null;
-		}
-		c.uploadMyProxy(false);
-		return c.getMyProxyUsername();
-	}
-
 	// public boolean set_min_autorefresh(Integer seconds) {
 	// if ((seconds == null) || (seconds <= 0)) {
 	// return false;
@@ -217,6 +230,15 @@ PropertyChangeListener {
 	// currentCredential.setMinTimeBetweenAutoRefreshes(seconds);
 	// return true;
 	// }
+
+	public String myproxy_username() {
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return null;
+		}
+		c.uploadMyProxy(false);
+		return c.getMyProxyUsername();
+	}
 
 	public String ping() {
 		return "ping";

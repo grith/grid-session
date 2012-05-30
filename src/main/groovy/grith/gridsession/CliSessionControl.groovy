@@ -20,12 +20,14 @@ class CliSessionControl {
 
 		control.execute('start')
 
-		control.execute([
-			'group_proxy_path',
-			'/nz/nesi'
-		])
+		//		control.execute([
+		//			'group_proxy_path',
+		//			'/nz/nesi'
+		//		])
 
 		control.execute('status')
+
+		control.execute('credential_type')
 
 		control.execute('upload')
 
