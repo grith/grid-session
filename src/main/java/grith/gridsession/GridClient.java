@@ -26,6 +26,16 @@ public class GridClient {
 
 		if (CommonGridProperties.getDefault().useGridSession()) {
 
+			// check whether we run on windows, if that is the case, we can't
+			// daemonize...
+			String currentOs = System.getProperty("os.name").toUpperCase();
+
+			if (currentOs.contains("WINDOWS")) {
+				myLogger.debug("Starting grid-session client without even trying to spawn grid-session daemon (bloody windows)...");
+				startClient(client, useSSL);
+				return;
+			}
+
 			try {
 
 				File file = new File("/tmp/jna");
@@ -54,7 +64,7 @@ public class GridClient {
 					// that's good, means something already running, we don't
 					// need to try to daemonize...
 					myLogger.debug("Starting grid-session client");
-					client.run();
+					startClient(client, useSSL);
 					return;
 				}
 
@@ -91,27 +101,7 @@ public class GridClient {
 					}
 					d.daemonize(args);
 
-					// check whether we can actually connect to grid-session service...
-					String ping = null;
-					try {
-						SessionClient sc = SessionClient.getDefault(useSSL);
-						if (sc != null) {
-							ping = sc.getSessionManagement().ping();
-						}
-					} catch (Exception e) {
-						myLogger.error("Error when trying to ping grid session.");
-					}
-
-					if (StringUtils.isBlank(ping)) {
-						myLogger.error("Session client can't be reached, disabling use of grid session.");
-						System.setProperty(
-								CommonGridProperties.Property.USE_GRID_SESSION
-								.toString(), "false");
-
-					}
-
-					myLogger.debug("Starting grid-session client");
-					client.run();
+					startClient(client, useSSL);
 
 					return;
 				}
@@ -160,6 +150,32 @@ public class GridClient {
 
 	}
 
+	private static void startClient(GridClient client, boolean useSSL) {
+
+		// check whether we can actually connect to grid-session service...
+		String ping = null;
+		try {
+			SessionClient sc = SessionClient.getDefault(useSSL);
+			if (sc != null) {
+				ping = sc.getSessionManagement().ping();
+			}
+		} catch (Exception e) {
+			myLogger.error("Error when trying to ping grid session.");
+		}
+
+		if (StringUtils.isBlank(ping)) {
+			myLogger.error("Session client can't be reached, disabling use of grid session.");
+			System.setProperty(
+					CommonGridProperties.Property.USE_GRID_SESSION
+					.toString(), "false");
+
+		}
+
+		myLogger.debug("Starting grid-session client");
+		client.run();
+		return;
+	}
+
 	private boolean useSSL = false;
 
 	private boolean useLocalTransport = false;
@@ -172,10 +188,10 @@ public class GridClient {
 	public GridClient() {
 	}
 
-	private void execute() {
-		BouncyCastleTool.initBouncyCastle();
-		run();
-	}
+	// private void execute() {
+	// BouncyCastleTool.initBouncyCastle();
+	// run();
+	// }
 
 	public ISessionManagement getSession() {
 
