@@ -26,7 +26,7 @@ public class GridClient extends SessionClient {
 	}
 
 	public GridClient(GridLoginParameters loginParams) throws Exception {
-		super();
+		super(loginParams.isLogout());
 		this.loginParams = loginParams;
 	}
 

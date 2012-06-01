@@ -109,12 +109,13 @@ PropertyChangeListener {
 
 	public void destroy() {
 
-		myLogger.debug("Uploading credential");
-		Cred c = getCredential();
-		if (c == null) {
-			return;
-		}
-		c.destroy();
+		myLogger.debug("Destroyting credential");
+		// Cred c = getCredential();
+		// if (c == null) {
+		// return;
+		// }
+		// c.destroy();
+		stop();
 
 	}
 

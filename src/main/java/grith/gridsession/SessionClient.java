@@ -49,12 +49,22 @@ public class SessionClient {
 
 	private boolean useLocalTransport = false;
 
+	private final boolean logout;
 
 
 	private boolean clientStarted = false;
 
 	protected SessionClient() throws Exception {
+		this(false);
+	}
 
+	protected SessionClient(boolean logout) throws Exception {
+		if (logout) {
+			myLogger.debug("Creating SessionClient for logout");
+		} else {
+			myLogger.debug("Creating SessionClient");
+		}
+		this.logout = logout;
 		BouncyCastleTool.initBouncyCastle();
 
 		if (useSSL) {
@@ -97,7 +107,7 @@ public class SessionClient {
 				}
 
 				if (!alreadyRunning) {
-					if (!d.isDaemonized()) {
+					if (!d.isDaemonized() || !logout) {
 						startDaemon(d);
 						myLogger.debug("Started daemon. Sleeping for a bit...");
 						try {
@@ -281,7 +291,15 @@ public class SessionClient {
 
 		clientStarted = true;
 
-		myLogger.debug("Starting grid-session client");
+		myLogger.debug("Started grid-session client");
+
+		if (logout) {
+			myLogger.debug("Logging out...");
+			if (sm != null) {
+				sm.destroy();
+			}
+			System.exit(0);
+		}
 	}
 
 	private void startDaemon(Daemon d) {
