@@ -6,8 +6,8 @@
 		<groupId>nz.org.nesi</groupId>
 		<version>0.11</version>
 	</parent>
-	
-	
+
+
   <artifactId>grid-session</artifactId>
   <version>0.1-SNAPSHOT</version>
   <name>Grid session client</name>
@@ -43,7 +43,7 @@
   		<version>${bcprov.version}</version>
   		<scope>provided</scope>
   	</dependency>
-  	
+
 		<dependency>
 			<groupId>org.apache.xmlrpc</groupId>
 			<artifactId>xmlrpc-server</artifactId>
@@ -82,7 +82,7 @@
 			<scope>provided</scope>
 		</dependency>
   </dependencies>
-  
+
 	<build>
 		<plugins>
 			<plugin>
@@ -110,7 +110,7 @@
 
 								<index>true</index>
 								<manifest>
-									<mainClass>grith.gridsession.SessionClient</mainClass>
+									<mainClass>grith.gridsession.CliSessionControl</mainClass>
 								</manifest>
 								<manifestEntries>
 									<Class-Path>bcprov.jar bcprov-jdk15-145.jar</Class-Path>
@@ -186,9 +186,9 @@
 
 		</plugins>
 	</build>
-  
-  
-  
+
+
+
 	<groupId>grith</groupId>
 	<url>https://github.com/grith/grid-session</url>
 	<organization>
@@ -207,8 +207,8 @@
 	<ciManagement>
 		<system>Jenkins</system>
 	</ciManagement>
-	
-	
+
+
 	<profiles>
 		<profile>
 			<id>exec</id>
@@ -323,7 +323,7 @@
 												<group>root</group>
 												<filemode>755</filemode>
 											</mapper>
-										</data>															
+										</data>
 
 									</dataSet>
 
@@ -394,9 +394,9 @@
 							<preinstallScriptlet>
 								<script>echo "Installing Grid-Session deamon..."</script>
 							</preinstallScriptlet>
-							<!-- <postinstallScriptlet> <scriptFile>src/main/scripts/postinstall</scriptFile> 
-								<fileEncoding>utf-8</fileEncoding> </postinstallScriptlet> <preremoveScriptlet> 
-								<scriptFile>src/main/scripts/preremove</scriptFile> <fileEncoding>utf-8</fileEncoding> 
+							<!-- <postinstallScriptlet> <scriptFile>src/main/scripts/postinstall</scriptFile>
+								<fileEncoding>utf-8</fileEncoding> </postinstallScriptlet> <preremoveScriptlet>
+								<scriptFile>src/main/scripts/preremove</scriptFile> <fileEncoding>utf-8</fileEncoding>
 								</preremoveScriptlet> -->
 						</configuration>
 					</plugin>
@@ -406,7 +406,7 @@
 
 		</profile>
 
-	</profiles>	
-	
-	
+	</profiles>
+
+
 </project>

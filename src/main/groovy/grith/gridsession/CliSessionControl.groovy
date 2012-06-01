@@ -3,64 +3,39 @@ package grith.gridsession
 import grisu.jcommons.configuration.CommonGridProperties
 import grisu.jcommons.constants.GridEnvironment
 import grisu.jcommons.constants.Enums.LoginType
-import grisu.jcommons.dependencies.BouncyCastleTool
 import grisu.jcommons.view.cli.CliHelpers
 import grith.jgrith.credential.Credential
 import grith.jgrith.utils.CliLogin
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class CliSessionControl {
+class CliSessionControl extends SessionClient {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 
-		BouncyCastleTool.initBouncyCastle();
+		CliSessionControl control = new CliSessionControl();
 
-		def control = new CliSessionControl(true, true)
+		myLogger.debug("Executing command.");
 
-		control.execute('start')
-
-		//		control.execute([
-		//			'group_proxy_path',
-		//			'/nz/nesi'
-		//		])
-
-		control.execute('status')
-
-		control.execute('credential_type')
-
-		control.execute('upload')
-
-		System.out.println('un: '+control.execute('myproxy_username'))
-
-		System.exit(0);
+		control.runCommand(args);
 	}
 
-	private SessionClient client
+
 	private ISessionManagement sm
 
 	private boolean silent = false
 
-	public CliSessionControl(boolean useLocalTransport, boolean initSSL) {
+	public CliSessionControl() {
+		super()
 
-		if ( ! useLocalTransport ) {
-			this.client = SessionClient.create(initSSL)
-			this.sm = client.getSessionManagement()
-		} else {
-			this.sm = new SessionManagement()
-			SessionManagement.kickOffIdpPreloading()
-		}
+		sm = getSession()
 	}
 
-	public SessionClient getSessionClient() {
-		return client
+	public void runCommand(String[] commandline) {
+		runCommand(Arrays.asList(commandline))
 	}
 
-	public void execute(String[] commandline) {
-		execute(Arrays.asList(commandline))
-	}
-
-	public void execute(List<String> commandline) {
+	public void runCommand(List<String> commandline) {
 
 		def command = commandline[0]
 		def result
@@ -82,8 +57,7 @@ class CliSessionControl {
 			}
 		} catch (all) {
 			println 'Command "'+command+ '" failed: '+all.getLocalizedMessage()
-			all.printStackTrace()
-			System.exit(1)
+			//			System.exit(1)
 		}
 
 		if (! silent ) {

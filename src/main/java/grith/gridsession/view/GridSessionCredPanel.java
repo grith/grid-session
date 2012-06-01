@@ -1,7 +1,6 @@
 package grith.gridsession.view;
 
 import grisu.jcommons.utils.WalltimeUtils;
-import grith.gridsession.GridSessionCred;
 import grith.jgrith.cred.Cred;
 import grith.jgrith.credential.Credential.PROPERTY;
 
@@ -49,13 +48,12 @@ public class GridSessionCredPanel extends CredPanel {
 	private JScrollPane scrollPane;
 	private JEditorPane propertiesPane;
 
-	private GridSessionCred cred = null;
+	private Cred cred = null;
 
 	/**
 	 * Create the panel.
 	 */
 	public GridSessionCredPanel() {
-		cred = GridSessionCred.getExistingSession();
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),
@@ -119,12 +117,19 @@ public class GridSessionCredPanel extends CredPanel {
 		panel.setBorder(new TitledBorder(null, title, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 	}
 
+	public void setCred(Cred cred) {
+		this.cred = cred;
+		setProperties();
+	}
+
 	private void setProperties() {
 
-		Map<String, String> props = new LinkedHashMap<String, String>();
-		if ((cred == null) && !cred.isValid()) {
-			props.put("Not logged in", "");
+		String propText = null;
+		if ((cred == null) || !cred.isValid()) {
+			propText = "No existing session";
 		} else {
+
+			Map<String, String> props = new LinkedHashMap<String, String>();
 
 			props.put("Logged in", "");
 			props.put("", "");
@@ -134,8 +139,8 @@ public class GridSessionCredPanel extends CredPanel {
 					.getRemainingLifetime());
 			props.put("Remaining lifetime", lifetime);
 			// props.put("Login type", cred.g)
+			propText = generateHtml(props);
 		}
-		final String propText = generateHtml(props);
 		getPropertiesPane().setText(propText);
 
 
