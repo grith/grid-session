@@ -314,42 +314,38 @@ public class SessionClient {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+		boolean jar = false;
+		String classpath = null;
 
-		int indexMax = -1;
-		int indexMin = -1;
-		int classpath = -1;
-		// String className = this.getClass().toString();
 		for (int i = 0; i < args.size(); i++) {
 			String arg = args.get(i);
-			if (arg.startsWith("-Xmx")) {
-				indexMax = i;
+
+			if (arg.trim().equals("-jar")) {
+				jar = true;
+				classpath = args.get(i + 1);
+				continue;
 			}
-			if (arg.startsWith("-Xms")) {
-				indexMin = i;
-			}
-			try {
-				Class startup = Class.forName(arg);
-				classpath = i;
-				myLogger.debug("Found class: " + startup);
-			} catch (ClassNotFoundException e) {
+
+			if (arg.equals("-cp")) {
+				classpath = args.get(i + 1);
+				continue;
 			}
 
 		}
 
-		if (indexMin >= 0) {
-			args.set(indexMin, memMin);
-		} else {
-			args.add(memMin);
-		}
-		if (indexMax >= 0) {
-			args.set(indexMax, memMax);
-		} else {
-			args.add(memMax);
+		if (StringUtils.isBlank(classpath)) {
+			throw new RuntimeException(
+					"Can't create daemon startup arguments...");
 		}
 
-		if (classpath >= 0) {
-			args.set(classpath, "grith.gridsession.GridSessionDaemon");
-		}
+		args.clear();
+		args.add("java");
+		args.add(memMin);
+		args.add(memMax);
+		args.add("-cp");
+		args.add(classpath);
+		args.add("grith.gridsession.GridSessionDaemon");
+
 
 		myLogger.debug("Daemonizing using args: {}",
 				StringUtils.join(args, ", "));
