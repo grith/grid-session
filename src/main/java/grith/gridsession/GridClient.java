@@ -46,7 +46,9 @@ public class GridClient extends SessionClient {
 			if (CommonGridProperties.getDefault().useGridSession()) {
 
 				cred = new GridSessionCred(this);
-				if (!cred.isValid()) {
+				boolean force = getLoginParameters().isForceAuthenticate();
+
+				if (force || !cred.isValid()) {
 
 					if (!getLoginParameters().validConfig()) {
 						myLogger.debug("Trying to retieve remaining login details.");
