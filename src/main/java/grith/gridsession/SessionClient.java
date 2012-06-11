@@ -252,7 +252,7 @@ public class SessionClient {
 					break;
 
 				} catch (UndeclaredThrowableException e) {
-					e.printStackTrace();
+					// e.printStackTrace();
 					myLogger.debug("Could not execute command, trying again.",
 							e);
 					try {
