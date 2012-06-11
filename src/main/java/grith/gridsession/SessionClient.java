@@ -103,7 +103,9 @@ public class SessionClient {
 					myLogger.debug("Server already running...");
 					alreadyRunning = true;
 				} catch (Exception e) {
-					e.printStackTrace();
+					myLogger.error(
+							"Error trying to connect to grid-session daemon.",
+							e);
 				}
 
 				if (!alreadyRunning) {
@@ -113,24 +115,9 @@ public class SessionClient {
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
-							e.printStackTrace();
+							myLogger.error("Interrupted daemon startup...", e);
 						}
-						// } else {
-						// try {
-						// d.init();
-						// } catch (Exception e) {
-						// e.printStackTrace();
-						// throw new RuntimeException(e);
-						// }
-						// myLogger.debug("Starting server...");
-						// // startServer();
-						// // try {
-						// // Thread.sleep(10000);
-						// // } catch (InterruptedException e) {
-						// // // TODO Auto-generated catch block
-						// // e.printStackTrace();
-						// // }
-						// return;
+
 					}
 				}
 
