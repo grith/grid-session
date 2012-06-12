@@ -79,7 +79,11 @@
 			<groupId>com.jgoodies</groupId>
 			<artifactId>jgoodiesforms</artifactId>
 			<version>1.5.1</version>
-			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.swinglabs.swingx</groupId>
+			<artifactId>swingx-core</artifactId>
+			<version>1.6.3</version>
 		</dependency>
   </dependencies>
 

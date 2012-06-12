@@ -39,8 +39,6 @@ public class SessionClient {
 
 	private static final int connect_retries = 2;
 
-
-
 	private ISessionManagement sm;
 
 	private BigInteger acceptedCertSerial;
@@ -58,7 +56,12 @@ public class SessionClient {
 		this(false);
 	}
 
+
 	protected SessionClient(boolean logout) throws Exception {
+		this(true, logout);
+	}
+
+	protected SessionClient(boolean daemonize, boolean logout) throws Exception {
 		if (logout) {
 			myLogger.debug("Creating SessionClient for logout");
 		} else {
@@ -84,12 +87,16 @@ public class SessionClient {
 
 	protected final void execute() {
 
+
 		if (CommonGridProperties.getDefault().useGridSession()) {
 			// check whether we run on windows, if that is the case, we can't
 			// daemonize...
 			String currentOs = System.getProperty("os.name").toUpperCase();
 
-			if (!currentOs.contains("WINDOWS")) {
+			boolean daemonize = CommonGridProperties.getDefault()
+					.daemonizeGridSession();
+
+			if (!currentOs.contains("WINDOWS") && daemonize) {
 				Daemon d = new Daemon();
 
 				boolean alreadyRunning = false;
@@ -111,14 +118,17 @@ public class SessionClient {
 				if (!alreadyRunning) {
 					if (!d.isDaemonized() || !logout) {
 						startDaemon(d);
-						myLogger.debug("Started daemon. Sleeping for a bit...");
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							myLogger.error("Interrupted daemon startup...", e);
-						}
-
 					}
+				}
+
+			} else {
+
+				try {
+					myLogger.debug("Starting session service...");
+					GridSessionDaemon daemon = new GridSessionDaemon();
+
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 
 			}
@@ -202,10 +212,19 @@ public class SessionClient {
 		this.useSSL = useSSL;
 	}
 
-	private synchronized void startClient() throws Exception {
+	protected synchronized void startClient() throws Exception {
 
 		String ping = null;
-		if ( !clientStarted ) {
+
+		if (!CommonGridProperties.getDefault().useGridSession()) {
+			if (logout) {
+				myLogger.debug("Logging out from non-grid-session client...");
+				System.exit(0);
+			}
+			sm = new SessionManagement();
+			return;
+		}
+		if (!clientStarted) {
 			int tries = 0;
 			// create configuration
 			RpcAuthToken auth = new RpcAuthToken();
@@ -289,7 +308,7 @@ public class SessionClient {
 		}
 	}
 
-	private void startDaemon(Daemon d) {
+	protected void startDaemon(Daemon d) {
 
 		String memMin = "-Xms24m";
 		String memMax = "-Xmx24m";
@@ -338,6 +357,15 @@ public class SessionClient {
 				StringUtils.join(args, ", "));
 
 		d.daemonize(args);
+
+		// need to restart client now.
+		clientStarted = false;
+		myLogger.debug("Started daemon. Sleeping for a bit...");
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			myLogger.error("Interrupted daemon startup...", e);
+		}
 
 		return;
 	}

@@ -1,19 +1,21 @@
 package grith.gridsession.view;
 
-import grisu.jcommons.configuration.CommonGridProperties;
+import grisu.jcommons.exceptions.CredentialException;
 import grith.gridsession.GridSessionCred;
 import grith.gridsession.SessionClient;
-import grith.jgrith.cred.AbstractCred;
 import grith.jgrith.cred.Cred;
 import grith.jgrith.credential.Credential.PROPERTY;
 
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import org.jdesktop.swingx.JXErrorPane;
+import org.jdesktop.swingx.error.ErrorInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +42,10 @@ public class CredCreationPanel extends JPanel {
 
 	private SessionClient sessionClient;
 
+	private volatile boolean isCreatingCredential = false;
+
+	private Cred lastCredential = null;
+
 	/**
 	 * Create the panel.
 	 */
@@ -53,33 +59,82 @@ public class CredCreationPanel extends JPanel {
 
 	}
 
-	public Cred createCredential() {
+	private synchronized Cred createCred() {
 
-		CredPanel selPanel = (CredPanel) getTabbedPane().getSelectedComponent();
+		isCreatingCredential = true;
+		firePropertyChange("creatingCredential", false, true);
+		lockUI(true);
+		try {
+			CredPanel selPanel = (CredPanel) getTabbedPane()
+					.getSelectedComponent();
 
-		if (selPanel instanceof GridSessionCredPanel) {
-			myLogger.debug("Using existing session credential.");
-			GridSessionCredPanel gscp = (GridSessionCredPanel) selPanel;
-			return gscp.getCredential();
-		}
+			if (selPanel instanceof GridSessionCredPanel) {
+				myLogger.debug("Using existing session credential.");
+				GridSessionCredPanel gscp = (GridSessionCredPanel) selPanel;
+				return gscp.getCredential();
+			}
 
-		Map<PROPERTY, Object> credConfig = selPanel.createCredConfig();
+			Map<PROPERTY, Object> credConfig = selPanel.createCredConfig();
 
-		Cred cred = null;
-		if (CommonGridProperties.getDefault().useGridSession()) {
+			Cred cred = null;
+			// if (CommonGridProperties.getDefault().useGridSession()) {
 			if (sessionClient == null) {
 				myLogger.debug("No sessionclient set. returning without credential creation.");
 				return null;
 			}
 			cred = new GridSessionCred(sessionClient, credConfig);
-		} else {
-			cred = AbstractCred.loadFromConfig(credConfig);
-		}
+			// } else {
+			// cred = AbstractCred.loadFromConfig(credConfig);
+			// }
 
-		System.out.println("DN: " + cred.getDN());
-		return cred;
+			myLogger.debug(" Created credential, dn: {}", cred.getDN());
+			isCreatingCredential = false;
+			return cred;
+		} catch (Exception e) {
+			throw new CredentialException("Could not create credential.", e);
+		} finally {
+			firePropertyChange("creatingCredential", true, false);
+			lockUI(false);
+		}
 	}
 
+	public void createCredential() {
+
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+
+				try {
+					Cred c = createCred();
+					lastCredential = c;
+					if (c != null) {
+						firePropertyChange("credential", null, c);
+					}
+				} catch (CredentialException ex) {
+
+					final String msg = ex.getCause().getLocalizedMessage();
+					final ErrorInfo info = new ErrorInfo("Login error",
+							"Can't create credential for login.", msg, "Error",
+							ex.getCause(),
+							Level.SEVERE, null);
+
+					final JXErrorPane pane = new JXErrorPane();
+					pane.setErrorInfo(info);
+
+					JXErrorPane.showDialog(CredCreationPanel.this, pane);
+					return;
+				}
+
+			}
+		};
+		t.setName("Credential Creation Thread");
+		t.start();
+
+	}
+
+	public Cred getCredential() {
+		return lastCredential;
+	}
 
 	private SLCSCredPanel getCredPanel() {
 		if (credPanel == null) {
@@ -95,12 +150,14 @@ public class CredCreationPanel extends JPanel {
 		return gridSessionCredPanel;
 	}
 
+
 	private MyProxyCredPanel getMyProxyCredPanel() {
 		if (myProxyCredPanel == null) {
 			myProxyCredPanel = new MyProxyCredPanel();
 		}
 		return myProxyCredPanel;
 	}
+
 	private JTabbedPane getTabbedPane() {
 		if (tabbedPane == null) {
 			tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -116,12 +173,22 @@ public class CredCreationPanel extends JPanel {
 		return tabbedPane;
 	}
 
-
 	private X509CredentialPanel getX509CredentialPanel() {
 		if (x509CredentialPanel == null) {
 			x509CredentialPanel = new X509CredentialPanel();
 		}
 		return x509CredentialPanel;
+	}
+	public boolean isCreatingCredential() {
+		return isCreatingCredential;
+	}
+
+
+	private void lockUI(boolean lock) {
+		getMyProxyCredPanel().lockUI(lock);
+		getX509CredentialPanel().lockUI(lock);
+		getGridSessionCredPanel().lockUI(lock);
+		getCredPanel().lockUI(lock);
 	}
 
 	public void setSessionClient(SessionClient c) {

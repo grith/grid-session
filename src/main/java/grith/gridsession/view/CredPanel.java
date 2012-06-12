@@ -12,4 +12,6 @@ public abstract class CredPanel extends JPanel {
 
 	abstract public String getCredTitle();
 
+	abstract public void lockUI(boolean lock);
+
 }

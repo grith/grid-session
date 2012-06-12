@@ -10,10 +10,11 @@ import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import org.apache.commons.lang.StringUtils;
-import org.python.google.common.collect.Maps;
+import com.google.common.collect.Maps;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -118,5 +119,18 @@ public class MyProxyCredPanel extends CredPanel {
 			passwordField = new JPasswordField();
 		}
 		return passwordField;
+	}
+
+	@Override
+	public void lockUI(final boolean lock) {
+
+		SwingUtilities.invokeLater(new Thread() {
+			@Override
+			public void run() {
+				getPasswordField().setEnabled(!lock);
+				getMyproxyUsername().setEnabled(!lock);
+			}
+		});
+
 	}
 }

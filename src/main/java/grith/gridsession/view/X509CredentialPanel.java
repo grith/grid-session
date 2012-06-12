@@ -7,9 +7,10 @@ import java.util.Map;
 
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
-import org.python.google.common.collect.Maps;
+import com.google.common.collect.Maps;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -29,7 +30,7 @@ public class X509CredentialPanel extends CredPanel {
 				ColumnSpec.decode("default:grow"),
 				FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
 				FormFactory.RELATED_GAP_ROWSPEC,
- FormFactory.DEFAULT_ROWSPEC,
+				FormFactory.DEFAULT_ROWSPEC,
 				FormFactory.RELATED_GAP_ROWSPEC, }));
 		add(getPanel(), "2, 2, fill, fill");
 
@@ -69,5 +70,17 @@ public class X509CredentialPanel extends CredPanel {
 			passwordField = new JPasswordField();
 		}
 		return passwordField;
+	}
+
+	@Override
+	public void lockUI(final boolean lock) {
+
+		SwingUtilities.invokeLater(new Thread() {
+			@Override
+			public void run() {
+				getPasswordField().setEnabled(!lock);
+			}
+		});
+
 	}
 }

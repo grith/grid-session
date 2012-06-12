@@ -10,7 +10,6 @@ import grith.jgrith.cred.Cred;
 import grith.jgrith.cred.MyProxyCred;
 import grith.jgrith.cred.SLCSCred;
 import grith.jgrith.cred.X509Cred;
-import grith.jgrith.credential.Credential;
 import grith.jgrith.credential.Credential.PROPERTY;
 
 import java.beans.PropertyChangeEvent;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.python.google.common.collect.Maps;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +32,7 @@ PropertyChangeListener {
 
 	public static ISessionServer server;
 
-	private static synchronized AbstractCred getCredential() {
+	private static AbstractCred getCredential() {
 
 
 		if ( (cred == null) || !cred.isValid() ) {
@@ -120,6 +119,7 @@ PropertyChangeListener {
 	}
 
 	public String dn() {
+		myLogger.debug("Getting DN");
 		Cred c = getCredential();
 		if (c == null) {
 			return null;
@@ -128,6 +128,7 @@ PropertyChangeListener {
 	}
 
 	public String group_proxy_path(String group) {
+		myLogger.debug("Group proxy path for: {}", group);
 		AbstractCred c = getCredential();
 		if (c == null) {
 			return null;
@@ -148,7 +149,7 @@ PropertyChangeListener {
 	 * @see grith.jgrith.session.ISessionManagement#isLoggedIn()
 	 */
 	public Boolean is_logged_in() {
-
+		myLogger.debug("Is logged in?");
 		Cred currentCredential = getCredential();
 		if (currentCredential == null) {
 			return false;
@@ -158,6 +159,7 @@ PropertyChangeListener {
 
 	public int lifetime() {
 
+		myLogger.debug("Remaining lifetime...");
 		Cred currentCredential = getCredential();
 
 		if ( currentCredential == null ) {
@@ -168,6 +170,7 @@ PropertyChangeListener {
 	}
 
 	public List<String> list_institutions() {
+		myLogger.debug("List institutions...");
 		try {
 			return SlcsLoginWrapper.getAllIdps();
 		} catch (Throwable e) {
@@ -175,12 +178,12 @@ PropertyChangeListener {
 		}
 	}
 
-	public synchronized Boolean login(Map<String, Object> config) {
+	public Boolean login(Map<String, Object> config) {
 		return start(config);
 	}
 
 	public void logout() {
-
+		myLogger.debug("Logging out...");
 		Cred currentCredential = getCredential();
 
 		if (currentCredential != null) {
@@ -191,7 +194,7 @@ PropertyChangeListener {
 	}
 
 	public String myproxy_host() {
-
+		myLogger.debug("MyProxy Host...");
 		AbstractCred c = getCredential();
 		if (c == null) {
 			return null;
@@ -202,6 +205,7 @@ PropertyChangeListener {
 	}
 
 	public String myproxy_password() {
+		myLogger.debug("MyProxy password...");
 		AbstractCred c = getCredential();
 		if (c == null) {
 			return null;
@@ -211,6 +215,7 @@ PropertyChangeListener {
 	}
 
 	public int myproxy_port() {
+		myLogger.debug("MyProxy port...");
 		myLogger.debug("myproxy port");
 		Cred c = getCredential();
 		if (c == null) {
@@ -233,6 +238,7 @@ PropertyChangeListener {
 	// }
 
 	public String myproxy_username() {
+		myLogger.debug("MyProxy Username...");
 		AbstractCred c = getCredential();
 		if (c == null) {
 			return null;
@@ -242,46 +248,19 @@ PropertyChangeListener {
 	}
 
 	public String ping() {
+		myLogger.debug("Ping...");
 		return "ping";
 	}
 
+
 	public void propertyChange(PropertyChangeEvent evt) {
 
-		Object o = evt.getSource();
 
-		if (o instanceof Credential) {
-			Credential c = (Credential) o;
-
-			String propName = evt.getPropertyName();
-			if ("belowMinLifetime".equals(propName)) {
-				try {
-					Thread.sleep(5000);
-				} catch (Exception e) {
-				}
-				myLogger.debug("Kicking of auto-refresh of credential because min lifetime reached.");
-				int tries = 0;
-				while (!c.autorefresh() && (tries < 25)) {
-					myLogger.debug("Auto-refresh of credential failed. Trying again in a minute.");
-					tries = tries + 1;
-					try {
-						Thread.sleep(600000);
-					} catch (InterruptedException e) {
-					}
-				}
-				if (tries >= 5) {
-					myLogger.debug("Could not auto-refresh credential.");
-				} else {
-					myLogger.debug("Credential auto-refresh successful, new lifetime: "
-							+ c.getRemainingLifetime());
-				}
-
-			}
-
-		}
-
+		myLogger.debug("EVENT: "+evt.getNewValue().toString());
 	}
 
 	public String proxy_path() {
+		myLogger.debug("Proxy path...");
 		AbstractCred c = getCredential();
 		if (c == null) {
 			return null;
@@ -293,13 +272,14 @@ PropertyChangeListener {
 	}
 
 	public boolean refresh() {
+		myLogger.debug("Refreshing...");
 		AbstractCred currentCredential = getCredential();
 
 		return currentCredential.refresh();
 	}
 
 	public boolean set_min_lifetime(Integer seconds) {
-
+		myLogger.debug("setting min lifetime to {} seconds", seconds);
 		AbstractCred currentCredential = getCredential();
 		if (currentCredential == null ) {
 			return false;
@@ -337,7 +317,7 @@ PropertyChangeListener {
 
 	public boolean shutdown() {
 
-		System.out.println("Shutting down...");
+		myLogger.debug("Shutting down...");
 
 		if (server != null) {
 			new Thread() {
@@ -360,7 +340,7 @@ PropertyChangeListener {
 	}
 
 	public synchronized Boolean start(Map<String, Object> config) {
-
+		myLogger.debug("Logging in...");
 		AbstractCred c = getCredential();
 
 		if (c != null) {
@@ -384,6 +364,7 @@ PropertyChangeListener {
 
 	public String status() {
 
+		myLogger.debug("getting status...");
 		if (!is_logged_in()) {
 			return "Not logged in";
 		}
@@ -410,6 +391,8 @@ PropertyChangeListener {
 	}
 
 	public void stop() {
+
+		myLogger.debug("Stopping daemon...");
 
 		Cred currentCredential = getCredential();
 

@@ -17,10 +17,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import org.apache.commons.lang.StringUtils;
-import org.python.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Maps;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -228,5 +228,17 @@ public class SLCSCredPanel extends CredPanel {
 
 		loadThread.start();
 
+	}
+
+	@Override
+	public void lockUI(final boolean lock) {
+		SwingUtilities.invokeLater(new Thread() {
+			@Override
+			public void run() {
+				getPasswordField().setEnabled(!lock);
+				getComboBox().setEnabled(!lock);
+				getUnField().setEnabled(!lock);
+			}
+		});
 	}
 }

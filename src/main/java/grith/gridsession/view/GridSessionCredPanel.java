@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 
-import org.python.google.common.collect.Maps;
+import com.google.common.collect.Maps;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -111,6 +111,12 @@ public class GridSessionCredPanel extends CredPanel {
 			scrollPane = new JScrollPane(getPropertiesPane());
 		}
 		return scrollPane;
+	}
+
+	@Override
+	public void lockUI(boolean lock) {
+		// nothing to do here...
+
 	}
 
 	private void setBorderTitle(String title) {
