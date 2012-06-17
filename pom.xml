@@ -8,10 +8,10 @@
 	</parent>
 
 
-  <artifactId>grid-session</artifactId>
-  <version>0.1-SNAPSHOT</version>
-  <name>Grid session client</name>
-  <description>A client which runs as a daemon and takes care of grid proxy logins and which can also auto-update credentials if that is supported by the type of authentication.</description>
+	<artifactId>grid-session</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>Grid session client</name>
+	<description>A client which runs as a daemon and takes care of grid proxy logins and which can also auto-update credentials if that is supported by the type of authentication.</description>
 
 	<repositories>
 		<repository>
@@ -31,18 +31,18 @@
 	</repositories>
 
 
-  <dependencies>
-  	<dependency>
-  		<groupId>grith</groupId>
-  		<artifactId>jgrith</artifactId>
-  		<version>0.7-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.bouncycastle</groupId>
-  		<artifactId>bcprov-jdk15</artifactId>
-  		<version>${bcprov.version}</version>
-  		<scope>provided</scope>
-  	</dependency>
+	<dependencies>
+		<dependency>
+			<groupId>grith</groupId>
+			<artifactId>jgrith</artifactId>
+			<version>0.7-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15</artifactId>
+			<version>${bcprov.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.xmlrpc</groupId>
@@ -85,7 +85,7 @@
 			<artifactId>swingx-core</artifactId>
 			<version>1.6.3</version>
 		</dependency>
-  </dependencies>
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -114,7 +114,8 @@
 
 								<index>true</index>
 								<manifest>
-									<mainClass>grith.gridsession.CliSessionControl</mainClass>
+<!-- 									<mainClass>grith.gridsession.CliSessionControl</mainClass> -->
+								<mainClass>grith.gridsession.view.tray.GridSessionTrayClient</mainClass>
 								</manifest>
 								<manifestEntries>
 									<Class-Path>bcprov.jar bcprov-jdk15-145.jar</Class-Path>
@@ -360,7 +361,7 @@
 							<group>Application/Other</group>
 							<!-- <icon>src/main/resources/icon.gif</icon> -->
 							<packager>Markus Binsteiner</packager>
-<!-- 							<prefix>/usr/local</prefix> -->
+							<!-- <prefix>/usr/local</prefix> -->
 							<version>${project.version}</version>
 							<!-- <changelogFile>src/changelog</changelogFile> -->
 							<!-- <defineStatements> -->
@@ -410,7 +411,12 @@
 
 		</profile>
 
+
 	</profiles>
 
+	<properties>
+		<staging.dir>${project.build.directory}/staging</staging.dir>
+		<izpack-standalone.version>4.3.1</izpack-standalone.version>
+	</properties>
 
 </project>
