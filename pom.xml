@@ -329,7 +329,17 @@
 												<filemode>755</filemode>
 											</mapper>
 										</data>
-
+										<data>
+											<src>${project.basedir}/src/deb/data/grid-tray</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/bin/</prefix>
+												<user>root</user>
+												<group>root</group>
+												<filemode>755</filemode>
+											</mapper>
+										</data>
 									</dataSet>
 
 								</configuration>
@@ -388,6 +398,9 @@
 									<sources>
 										<source>
 											<location>src/deb/data/grid-session</location>
+										</source>
+										<source>
+											<location>src/deb/data/grid-tray</location>
 										</source>
 									</sources>
 								</mapping>

@@ -1,6 +1,5 @@
 package grith.gridsession.view.tray;
 
-import grisu.jcommons.configuration.CommonGridProperties;
 import grith.gridsession.GridClient;
 
 import java.awt.AWTException;
@@ -17,9 +16,9 @@ PropertyChangeListener {
 
 	public static void main(String[] args) throws Exception {
 
-		System.setProperty(
-				CommonGridProperties.Property.DAEMONIZE_GRID_SESSION.toString(),
-				"false");
+		// System.setProperty(
+		// CommonGridProperties.Property.DAEMONIZE_GRID_SESSION.toString(),
+		// "false");
 		GridSessionTrayClient c = new GridSessionTrayClient();
 
 	}
