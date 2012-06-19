@@ -20,7 +20,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class MiniGridSessionInfoPanel extends JPanel implements
+public class MiniCredInfoPanel extends JPanel implements
 PropertyChangeListener {
 	private JLabel lblNewLabel;
 	private JLabel lblNewLabel_1;
@@ -41,7 +41,7 @@ PropertyChangeListener {
 	/**
 	 * Create the panel.
 	 */
-	public MiniGridSessionInfoPanel() {
+	public MiniCredInfoPanel() {
 		setLayout(new FormLayout(new ColumnSpec[] {
 				FormFactory.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),

@@ -1,5 +1,6 @@
 package grith.gridsession;
 
+import grisu.jcommons.constants.Constants;
 import grisu.jcommons.constants.Enums.LoginType;
 import grisu.jcommons.exceptions.CredentialException;
 import grisu.jcommons.utils.OutputHelpers;
@@ -18,9 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.Maps;
 
 public class SessionManagement implements ISessionManagement,
 PropertyChangeListener {
@@ -127,6 +130,22 @@ PropertyChangeListener {
 		return c.getDN();
 	}
 
+	private AbstractCred getGroupCredential(String group) {
+
+		AbstractCred c = getCredential();
+		if (c == null) {
+			throw new CredentialException("Not logged in.");
+		}
+
+		AbstractCred gc = c.getGroupCredential(group);
+		if ( gc == null ) {
+			throw new CredentialException("Not member of "+group);
+		}
+
+		return gc;
+
+	}
+
 	public String group_proxy_path(String group) {
 		myLogger.debug("Group proxy path for: {}", group);
 		AbstractCred c = getCredential();
@@ -143,6 +162,17 @@ PropertyChangeListener {
 
 	}
 
+	public List<String> groups() {
+
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return Lists.newArrayList();
+		}
+
+		return Lists.newArrayList(c.getGroups());
+
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -155,6 +185,23 @@ PropertyChangeListener {
 			return false;
 		}
 		return currentCredential.isValid();
+	}
+
+	public Boolean is_uploaded() {
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return false;
+		}
+		return c.isUploaded();
+	}
+
+	public Boolean is_uploaded(String group) {
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return false;
+		}
+		AbstractCred gc = getGroupCredential(group);
+		return gc.isUploaded();
 	}
 
 	public int lifetime() {
@@ -182,6 +229,18 @@ PropertyChangeListener {
 		return start(config);
 	}
 
+	// public boolean set_min_autorefresh(Integer seconds) {
+	// if ((seconds == null) || (seconds <= 0)) {
+	// return false;
+	// }
+	// AbstractCred currentCredential = getCredential();
+	// if (currentCredential == null ) {
+	// return false;
+	// }
+	// currentCredential.setMinTimeBetweenAutoRefreshes(seconds);
+	// return true;
+	// }
+
 	public void logout() {
 		myLogger.debug("Logging out...");
 		Cred currentCredential = getCredential();
@@ -199,10 +258,11 @@ PropertyChangeListener {
 		if (c == null) {
 			return null;
 		}
-		c.uploadMyProxy(false);
+		// c.uploadMyProxy(false);
 		return c.getMyProxyHost();
 
 	}
+
 
 	public String myproxy_password() {
 		myLogger.debug("MyProxy password...");
@@ -210,8 +270,17 @@ PropertyChangeListener {
 		if (c == null) {
 			return null;
 		}
-		c.uploadMyProxy(false);
+		// c.uploadMyProxy(false);
 		return new String(c.getMyProxyPassword());
+	}
+
+	public String myproxy_password(String group) {
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return null;
+		}
+		AbstractCred gc = getCredential().getGroupCredential(group);
+		return new String(gc.getMyProxyPassword());
 	}
 
 	public int myproxy_port() {
@@ -225,33 +294,29 @@ PropertyChangeListener {
 		return c.getMyProxyPort();
 	}
 
-	// public boolean set_min_autorefresh(Integer seconds) {
-	// if ((seconds == null) || (seconds <= 0)) {
-	// return false;
-	// }
-	// AbstractCred currentCredential = getCredential();
-	// if (currentCredential == null ) {
-	// return false;
-	// }
-	// currentCredential.setMinTimeBetweenAutoRefreshes(seconds);
-	// return true;
-	// }
-
 	public String myproxy_username() {
 		myLogger.debug("MyProxy Username...");
 		AbstractCred c = getCredential();
 		if (c == null) {
 			return null;
 		}
-		c.uploadMyProxy(false);
+		// c.uploadMyProxy(false);
 		return c.getMyProxyUsername();
+	}
+
+	public String myproxy_username(String group) {
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return null;
+		}
+		AbstractCred gc = getCredential().getGroupCredential(group);
+		return gc.getMyProxyUsername();
 	}
 
 	public String ping() {
 		myLogger.debug("Ping...");
 		return "ping";
 	}
-
 
 	public void propertyChange(PropertyChangeEvent evt) {
 
@@ -407,10 +472,11 @@ PropertyChangeListener {
 	public boolean upload() {
 
 		myLogger.debug("Uploading credential");
-		Cred c = getCredential();
+		AbstractCred c = getCredential();
 		if (c == null) {
 			return false;
 		}
+
 		try {
 			c.uploadMyProxy();
 			return true;
@@ -421,21 +487,134 @@ PropertyChangeListener {
 
 	}
 
-	public boolean upload(String myproxyhost) {
+	public boolean upload(String group) {
+		myLogger.debug("Uploading credential for group " + group);
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return false;
+		}
+
+		if (StringUtils.isBlank(group) || Constants.NON_VO_FQAN.equals(group)) {
+			try {
+				c.uploadMyProxy(false);
+				return true;
+			} catch (Exception e) {
+				myLogger.error("Can't upload to myproxy: {}", e);
+				return false;
+			}
+		} else {
+			AbstractCred gc = getGroupCredential(group);
+			try {
+				gc.uploadMyProxy(false);
+				return true;
+			} catch (Exception e) {
+				myLogger.error("Can't upload to myproxy: {}", e);
+				return false;
+			}
+		}
+	}
+
+	public boolean upload(String group, String myproxyhost) {
 
 		myLogger.debug("Uploading credential to " + myproxyhost);
 		AbstractCred c = getCredential();
 		if (c == null) {
 			return false;
 		}
-		c.setMyProxyHost(myproxyhost);
-		try {
-			c.uploadMyProxy(true);
-			return true;
-		} catch (Exception e) {
-			myLogger.error("Can't upload to myproxy: {}", e);
+		if (StringUtils.isBlank(group) || Constants.NON_VO_FQAN.equals(group)) {
+			c.setMyProxyHost(myproxyhost);
+			try {
+				c.uploadMyProxy(true);
+				return true;
+			} catch (Exception e) {
+				myLogger.error("Can't upload to myproxy: {}", e);
+				return false;
+			}
+		} else {
+			AbstractCred gc = getGroupCredential(group);
+			gc.setMyProxyHost(myproxyhost);
+			try {
+				gc.uploadMyProxy(true);
+				return true;
+			} catch (Exception e) {
+				myLogger.error("Can't upload to myproxy: {}", e);
+				return false;
+			}
+		}
+	}
+
+	public boolean upload(String group, String myproxyhost,
+			String myproxyusername) {
+
+		myLogger.debug("Uploading credential to " + myproxyhost);
+		AbstractCred c = getCredential();
+		if (c == null) {
 			return false;
 		}
+		if (StringUtils.isBlank(group) || Constants.NON_VO_FQAN.equals(group)) {
+			try {
+				c.setMyProxyHost(myproxyhost);
+				c.setMyProxyUsername(myproxyusername);
+				c.setMyProxyPassword(null);
+				c.uploadMyProxy(true);
+				return true;
+			} catch (Exception e) {
+				myLogger.error("Can't upload to myproxy: {}", e);
+				return false;
+			}
+		} else {
+			AbstractCred gc = getGroupCredential(group);
+
+			try {
+				gc.setMyProxyHost(myproxyhost);
+				gc.setMyProxyUsername(myproxyusername);
+				gc.setMyProxyPassword(null);
+				gc.uploadMyProxy(true);
+				return true;
+			} catch (Exception e) {
+				myLogger.error("Can't upload to myproxy: {}", e);
+				return false;
+			}
+		}
+	}
+
+	public boolean upload(String group, String myproxyhost,
+			String myproxyusername,
+			char[] myproxypassword) {
+
+		myLogger.debug("Uploading credential to " + myproxyhost);
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return false;
+		}
+
+		if (StringUtils.isBlank(group) || Constants.NON_VO_FQAN.equals(group)) {
+			try {
+				c.setMyProxyHost(myproxyhost);
+				c.setMyProxyUsername(myproxyusername);
+				c.setMyProxyPassword(myproxypassword);
+				c.uploadMyProxy(true);
+				return true;
+			} catch (Exception e) {
+				myLogger.error("Can't upload to myproxy: {}", e);
+				return false;
+			}
+		} else {
+			AbstractCred gc = getGroupCredential(group);
+
+			try {
+				gc.setMyProxyHost(myproxyhost);
+				gc.setMyProxyUsername(myproxyusername);
+				gc.setMyProxyPassword(myproxypassword);
+				gc.uploadMyProxy(true);
+				return true;
+			} catch (Exception e) {
+				myLogger.error("Can't upload to myproxy: {}", e);
+				return false;
+			}
+		}
+
+
 	}
 
 }

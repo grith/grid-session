@@ -15,7 +15,13 @@ public interface ISessionManagement {
 
 	public String group_proxy_path(String group);
 
+	public List<String> groups();
+
 	public abstract Boolean is_logged_in();
+
+	public abstract Boolean is_uploaded();
+
+	public abstract Boolean is_uploaded(String group);
 
 	public int lifetime();
 
@@ -29,13 +35,17 @@ public interface ISessionManagement {
 
 	public String myproxy_password();
 
+	public String myproxy_password(String group);
+
 	public abstract int myproxy_port();
 
 	public String myproxy_username();
 
-	public String ping();
+	public String myproxy_username(String group);
 
 	// public boolean set_min_autorefresh(Integer seconds);
+
+	public String ping();
 
 	public String proxy_path();
 
@@ -57,6 +67,14 @@ public interface ISessionManagement {
 
 	public boolean upload();
 
-	public boolean upload(String myproxyhost);
+	public boolean upload(String group);
+
+	public boolean upload(String group, String myproxyhost);
+
+	public boolean upload(String group, String myproxyhost,
+			String myproxyusername);
+
+	public boolean upload(String group, String myproxyhost,
+			String myproxyusername, char[] myproxypassword);
 
 }

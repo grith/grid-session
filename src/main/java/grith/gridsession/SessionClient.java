@@ -52,16 +52,12 @@ public class SessionClient {
 
 	private boolean clientStarted = false;
 
-	protected SessionClient() throws Exception {
+	public SessionClient() throws Exception {
 		this(false);
 	}
 
 
-	protected SessionClient(boolean logout) throws Exception {
-		this(true, logout);
-	}
-
-	protected SessionClient(boolean daemonize, boolean logout) throws Exception {
+	public SessionClient(boolean logout) throws Exception {
 		if (logout) {
 			myLogger.debug("Creating SessionClient for logout");
 		} else {

@@ -54,6 +54,8 @@ public class GridLoginDialog extends JDialog implements PropertyChangeListener {
 	 * Create the dialog.
 	 */
 	public GridLoginDialog(SessionClient client) {
+		super();
+		setModal(true);
 		this.client = client;
 		credCreationPanel.setSessionClient(this.client);
 		setBounds(100, 100, 590, 424);

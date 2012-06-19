@@ -4,6 +4,7 @@ import grisu.jcommons.exceptions.CredentialException;
 import grith.gridsession.ISessionManagement;
 import grith.gridsession.SessionClient;
 import grith.gridsession.view.GridLoginDialog;
+import grith.gridsession.view.tray.group.GroupMyProxyDialog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,6 +29,7 @@ public class GridSessionController {
 
 		public void actionPerformed(ActionEvent e) {
 			getLoginDialog().setVisible(true);
+			refreshStatus();
 		}
 
 	}
@@ -44,7 +46,7 @@ public class GridSessionController {
 			}
 
 			client.getSession().logout();
-
+			refreshStatus();
 		}
 
 	}
@@ -62,12 +64,13 @@ public class GridSessionController {
 			}
 
 			client.getSession().stop();
-
 			System.exit(0);
 
 		}
 
 	}
+
+
 
 	static final Logger myLogger = LoggerFactory
 			.getLogger(GridSessionController.class.getName());
@@ -79,9 +82,9 @@ public class GridSessionController {
 	private SessionClient client;
 
 	public final LoginAction loginAction = new LoginAction();
+
 	public final LogoutAction logoutAction = new LogoutAction();
 	public final StopAction stopAction = new StopAction();
-
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
 	public static final int DELAY = 10000;
@@ -92,9 +95,11 @@ public class GridSessionController {
 
 	private boolean online = false;
 
+	private final GroupMyProxyDialog myDialog;
+
 	public GridSessionController(SessionClient s) {
 		this.client = s;
-
+		myDialog = new GroupMyProxyDialog(this);
 	}
 
 	public void addPropertyChangeListener(PropertyChangeListener l) {
@@ -117,19 +122,13 @@ public class GridSessionController {
 		return loginDialog;
 	}
 
-	private ISessionManagement getSession() {
-		if (this.client == null) {
-			return null;
-		}
-		return this.client.getSession();
-	}
-
 	public ISessionManagement getSessionManagement() {
 		if (client == null) {
 			return null;
 		}
 		return client.getSession();
 	}
+
 
 	public void init() {
 		pcs.firePropertyChange("online", null, false);
@@ -154,11 +153,11 @@ public class GridSessionController {
 		return online;
 	}
 
-	private synchronized void refreshStatus() {
+	public synchronized void refreshStatus() {
 
 		boolean lastOnline = online;
 		// try {
-		lifetime = getSession().lifetime();
+		lifetime = getSessionManagement().lifetime();
 		lastChecked = new Date().getTime();
 		// } catch (UndeclaredThrowableException ute) {
 		// // maybe session was stopped? Trying to restart it...
@@ -194,6 +193,11 @@ public class GridSessionController {
 
 	public void setSessionClient(SessionClient s) {
 		this.client = s;
+	}
+
+	public void showGroupMyProxyDialog(String group) {
+		myDialog.setGroup(group);
+		myDialog.setVisible(true);
 	}
 
 }
