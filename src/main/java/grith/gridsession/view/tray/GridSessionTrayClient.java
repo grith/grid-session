@@ -1,8 +1,10 @@
 package grith.gridsession.view.tray;
 
+import grisu.jcommons.utils.DefaultExceptionHandler;
 import grith.gridsession.GridClient;
 
 import java.awt.AWTException;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.SystemTray;
 import java.beans.PropertyChangeEvent;
@@ -10,6 +12,10 @@ import java.beans.PropertyChangeListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import com.jgoodies.common.base.SystemUtils;
+import com.jgoodies.looks.Options;
 
 public class GridSessionTrayClient extends GridClient implements
 PropertyChangeListener {
@@ -19,6 +25,28 @@ PropertyChangeListener {
 		// System.setProperty(
 		// CommonGridProperties.Property.DAEMONIZE_GRID_SESSION.toString(),
 		// "false");
+
+		Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler());
+
+		myLogger.debug("Setting look and feel.");
+
+		UIManager.put(Options.USE_SYSTEM_FONTS_APP_KEY, Boolean.TRUE);
+		Options.setDefaultIconSize(new Dimension(18, 18));
+
+		String lafName = null;
+		if (SystemUtils.IS_OS_WINDOWS) {
+			lafName = Options.JGOODIES_WINDOWS_NAME;
+		} else {
+			lafName = UIManager.getSystemLookAndFeelClassName();
+		}
+
+		try {
+			myLogger.debug("Look and feel name:" + lafName);
+			UIManager.setLookAndFeel(lafName);
+		} catch (Exception e) {
+			System.err.println("Can't set look & feel:" + e);
+		}
+
 		GridSessionTrayClient c = new GridSessionTrayClient();
 
 	}
