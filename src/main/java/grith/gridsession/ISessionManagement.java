@@ -7,8 +7,6 @@ public interface ISessionManagement {
 
 	public String credential_type();
 
-	// public Boolean is_auto_renew();
-
 	public abstract void destroy();
 
 	public abstract String dn();
@@ -18,6 +16,8 @@ public interface ISessionManagement {
 	public List<String> groups();
 
 	public abstract Boolean is_logged_in();
+
+	public boolean is_renewable();
 
 	public abstract Boolean is_uploaded();
 
@@ -42,8 +42,6 @@ public interface ISessionManagement {
 	public String myproxy_username();
 
 	public String myproxy_username(String group);
-
-	// public boolean set_min_autorefresh(Integer seconds);
 
 	public String ping();
 

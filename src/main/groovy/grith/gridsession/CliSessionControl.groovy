@@ -1,8 +1,10 @@
 package grith.gridsession
 
+
 import grisu.jcommons.configuration.CommonGridProperties
 import grisu.jcommons.constants.GridEnvironment
 import grisu.jcommons.constants.Enums.LoginType
+import grisu.jcommons.utils.EnvironmentVariableHelpers
 import grisu.jcommons.view.cli.CliHelpers
 import grith.jgrith.credential.Credential
 import grith.jgrith.utils.CliLogin
@@ -12,6 +14,8 @@ import groovy.util.logging.Slf4j
 class CliSessionControl extends SessionClient {
 
 	public static void main(String[] args) throws Exception {
+
+		EnvironmentVariableHelpers.loadEnvironmentVariablesToSystemProperties();
 
 		CliSessionControl control = new CliSessionControl();
 
@@ -61,6 +65,28 @@ class CliSessionControl extends SessionClient {
 		}
 
 		if (! silent ) {
+			postprocess(command, result)
+		}
+	}
+
+	private post_start(def result) {
+		if ( result ) {
+			println ("Login successful")
+		} else {
+			println ("Login failed")
+		}
+	}
+
+	private post_groups(def result) {
+		for (def g : result ) {
+			println(g)
+		}
+	}
+
+	private postprocess(def command, def result) {
+		try {
+			return this."post_$command"(result)
+		} catch (all) {
 			println result
 		}
 	}
@@ -134,13 +160,15 @@ class CliSessionControl extends SessionClient {
 				'Institution login',
 				lastIdpChoice,
 				'MyProxy login',
-				'Certificate login'
+				'Certificate login',
+				'Certificate login (custom path)'
 			]
 		} else {
 			choices = [
 				'Institution login',
 				'MyProxy login',
-				'Certificate login'
+				'Certificate login',
+				'Certificate login (custom path)'
 			]
 		}
 
@@ -193,6 +221,29 @@ class CliSessionControl extends SessionClient {
 				loginConf[Credential.PROPERTY.MyProxyPassword.toString()] = pw
 
 				break
+			case 'Certificate login (custom path)':
+				File cert
+				String path
+				while (!path) {
+					path = CliLogin.ask('Please enter the path to the certificate')
+					cert = new File(path)
+					if (! cert.exists() || ! cert.canRead()) {
+						println "File "+path+" does not exists or can't be read"
+						path = null
+					}
+				}
+				File key
+				path = null
+				while (!path) {
+					path = CliLogin.ask('Please enter the path to the private key')
+					key = new File(path)
+					if (! key.exists() || ! key.canRead()) {
+						println "File "+path+" does not exists or can't be read"
+						path = null
+					}
+				}
+				loginConf[Credential.PROPERTY.CertFile.toString()] = cert.getAbsolutePath()
+				loginConf[Credential.PROPERTY.KeyFile.toString()] = key.getAbsolutePath()
 			case 'Certificate login':
 				loginConf[Credential.PROPERTY.LoginType.toString()] = LoginType.X509_CERTIFICATE
 

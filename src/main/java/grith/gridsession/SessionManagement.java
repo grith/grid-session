@@ -9,6 +9,7 @@ import grith.jgrith.control.SlcsLoginWrapper;
 import grith.jgrith.cred.AbstractCred;
 import grith.jgrith.cred.Cred;
 import grith.jgrith.cred.MyProxyCred;
+import grith.jgrith.cred.ProxyCred;
 import grith.jgrith.cred.SLCSCred;
 import grith.jgrith.cred.X509Cred;
 import grith.jgrith.credential.Credential.PROPERTY;
@@ -39,8 +40,16 @@ PropertyChangeListener {
 
 
 		if ( (cred == null) || !cred.isValid() ) {
-			myLogger.debug("No valid credential.");
-			cred = null;
+
+			ProxyCred pc = new ProxyCred();
+
+			if (pc.isValid()) {
+				cred = pc;
+				myLogger.debug("Loaded local credential");
+			} else {
+				myLogger.debug("No valid credential.");
+				cred = null;
+			}
 		}
 		// try {
 		// cred = Credential.load(location);
@@ -187,6 +196,16 @@ PropertyChangeListener {
 		return currentCredential.isValid();
 	}
 
+	public boolean is_renewable() {
+		myLogger.debug("Checking renewability...");
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return false;
+		}
+
+		return c.isRenewable();
+	}
+
 	public Boolean is_uploaded() {
 		AbstractCred c = getCredential();
 		if (c == null) {
@@ -225,10 +244,6 @@ PropertyChangeListener {
 		}
 	}
 
-	public Boolean login(Map<String, Object> config) {
-		return start(config);
-	}
-
 	// public boolean set_min_autorefresh(Integer seconds) {
 	// if ((seconds == null) || (seconds <= 0)) {
 	// return false;
@@ -241,6 +256,10 @@ PropertyChangeListener {
 	// return true;
 	// }
 
+	public Boolean login(Map<String, Object> config) {
+		return start(config);
+	}
+
 	public void logout() {
 		myLogger.debug("Logging out...");
 		Cred currentCredential = getCredential();
@@ -252,6 +271,7 @@ PropertyChangeListener {
 
 	}
 
+
 	public String myproxy_host() {
 		myLogger.debug("MyProxy Host...");
 		AbstractCred c = getCredential();
@@ -262,7 +282,6 @@ PropertyChangeListener {
 		return c.getMyProxyHost();
 
 	}
-
 
 	public String myproxy_password() {
 		myLogger.debug("MyProxy password...");
@@ -406,7 +425,7 @@ PropertyChangeListener {
 
 	public synchronized Boolean start(Map<String, Object> config) {
 		myLogger.debug("Logging in...");
-		AbstractCred c = getCredential();
+		AbstractCred c = cred;
 
 		if (c != null) {
 			c.removePropertyChangeListener(this);
@@ -442,14 +461,24 @@ PropertyChangeListener {
 		temp.put("Remaining session lifetime", remainingString[0] + " "
 				+ remainingString[1] + " (" + remaining + " seconds)");
 
-		int minlifetime = c.getMinimumLifetime();
-		String[] hrmlifetime = WalltimeUtils
-				.convertSecondsInHumanReadableString(minlifetime);
-		temp.put("Min. lifetime before renew", hrmlifetime[0] + " "
-				+ hrmlifetime[1]
-						+ " (" + minlifetime + " seconds)");
+		boolean isRenewable = c.isRenewable();
+		if (isRenewable) {
+
+			temp.put("Renewable", "Yes");
+
+			int minlifetime = c.getMinimumLifetime();
+
+			String[] hrmlifetime = WalltimeUtils
+					.convertSecondsInHumanReadableString(minlifetime);
+			temp.put("Min. lifetime before renew", hrmlifetime[0] + " "
+					+ hrmlifetime[1]
+							+ " (" + minlifetime + " seconds)");
+		} else {
+			temp.put("Renewable", "No");
+		}
 
 		temp.put("User ID", c.getDN());
+
 
 		String output = OutputHelpers.getTable(temp);
 		return output;
@@ -459,11 +488,11 @@ PropertyChangeListener {
 
 		myLogger.debug("Stopping daemon...");
 
-		Cred currentCredential = getCredential();
-
-		if (currentCredential != null) {
-			currentCredential.destroy();
-		}
+		// Cred currentCredential = getCredential();
+		//
+		// if (currentCredential != null) {
+		// currentCredential.destroy();
+		// }
 
 		shutdown();
 
@@ -579,8 +608,7 @@ PropertyChangeListener {
 	}
 
 	public boolean upload(String group, String myproxyhost,
-			String myproxyusername,
-			char[] myproxypassword) {
+			String myproxyusername, char[] myproxypassword) {
 
 		myLogger.debug("Uploading credential to " + myproxyhost);
 		AbstractCred c = getCredential();
@@ -613,7 +641,6 @@ PropertyChangeListener {
 				return false;
 			}
 		}
-
 
 	}
 

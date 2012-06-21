@@ -77,6 +77,10 @@ public class GridSessionCred implements Cred {
 
 	}
 
+	public boolean isRenewable() {
+		return session.getSession().is_renewable();
+	}
+
 	public boolean isValid() {
 		return session.getSession().is_logged_in();
 	}

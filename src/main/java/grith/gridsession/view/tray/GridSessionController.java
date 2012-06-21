@@ -51,8 +51,8 @@ public class GridSessionController {
 
 	}
 
-	private class StopAction extends AbstractAction {
-		public StopAction() {
+	private class ExitAction extends AbstractAction {
+		public ExitAction() {
 			putValue(NAME, "Exit");
 			putValue(SHORT_DESCRIPTION,
 					"Destroy login credential and close session daemon if one exists");
@@ -63,7 +63,6 @@ public class GridSessionController {
 				return;
 			}
 
-			client.getSession().stop();
 			System.exit(0);
 
 		}
@@ -84,7 +83,7 @@ public class GridSessionController {
 	public final LoginAction loginAction = new LoginAction();
 
 	public final LogoutAction logoutAction = new LogoutAction();
-	public final StopAction stopAction = new StopAction();
+	public final ExitAction stopAction = new ExitAction();
 	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
 	public static final int DELAY = 10000;
