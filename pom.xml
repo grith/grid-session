@@ -428,7 +428,7 @@
 								</mapping>
 								<mapping>
 									<directory>/etc/bash_completion.d</directory>
-									<filemode>644</filemode>
+<!-- 									<filemode>644</filemode> -->
 									<username>root</username>
 									<groupname>root</groupname>
 									<sources>
