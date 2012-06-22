@@ -95,12 +95,12 @@ public class GridSessionCred implements Cred {
 	}
 
 	public void setMyProxyHost(String myProxyServer) {
-		session.getSession().set_myProxy_host(myProxyServer);
+		session.getSession().set_myproxy_host(myProxyServer);
 
 	}
 
 	public void setMyProxyPort(int port) {
-		session.getSession().set_myProxy_port(port);
+		session.getSession().set_myproxy_port(port);
 
 	}
 

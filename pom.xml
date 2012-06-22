@@ -340,6 +340,18 @@
 											</mapper>
 										</data>
 										<data>
+											<src>${project.basedir}/src/deb/data/tabcompletion/grid-session</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/etc/bash_completion.d</prefix>
+												<user>root</user>
+												<group>root</group>
+												<filemode>644</filemode>
+											</mapper>
+										</data>
+
+										<data>
 											<src>${project.basedir}/src/deb/data/grid-tray</src>
 											<type>file</type>
 											<mapper>

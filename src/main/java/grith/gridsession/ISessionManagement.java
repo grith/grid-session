@@ -51,9 +51,13 @@ public interface ISessionManagement {
 
 	public abstract boolean set_min_lifetime(Integer lt);
 
-	public abstract void set_myProxy_host(String myProxyServer);
+	public abstract void set_myproxy_host(String myProxyServer);
 
-	public abstract void set_myProxy_port(int port);
+	public abstract void set_myproxy_password(char[] password);
+
+	public abstract void set_myproxy_port(int port);
+
+	public abstract void set_myproxy_username(String username);
 
 	public abstract boolean shutdown();
 

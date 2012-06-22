@@ -38,18 +38,24 @@ PropertyChangeListener {
 
 	private static AbstractCred getCredential() {
 
-
 		if ( (cred == null) || !cred.isValid() ) {
 
-			ProxyCred pc = new ProxyCred();
-
-			if (pc.isValid()) {
-				cred = pc;
-				myLogger.debug("Loaded local credential");
-			} else {
-				myLogger.debug("No valid credential.");
+			ProxyCred pc = null;
+			try {
+				pc = new ProxyCred();
+				if (pc.isValid()) {
+					cred = pc;
+					myLogger.debug("Loaded local credential");
+				} else {
+					myLogger.debug("No valid credential.");
+					cred = null;
+				}
+			} catch (CredentialException e) {
 				cred = null;
 			}
+
+
+
 		}
 		// try {
 		// cred = Credential.load(location);
@@ -126,6 +132,7 @@ PropertyChangeListener {
 		// return;
 		// }
 		// c.destroy();
+		logout();
 		stop();
 
 	}
@@ -373,7 +380,7 @@ PropertyChangeListener {
 
 	}
 
-	public void set_myProxy_host(String myProxyServer) {
+	public void set_myproxy_host(String myProxyServer) {
 		myLogger.debug("Setting myproxy host");
 		AbstractCred c = getCredential();
 		if (c == null) {
@@ -384,7 +391,19 @@ PropertyChangeListener {
 
 	}
 
-	public void set_myProxy_port(int port) {
+
+	public void set_myproxy_password(char[] pw) {
+		myLogger.debug("Setting myproxy password");
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return;
+		}
+
+		c.setMyProxyPassword(pw);
+
+	}
+
+	public void set_myproxy_port(int port) {
 
 		myLogger.debug("Setting myproxy host");
 		AbstractCred c = getCredential();
@@ -393,6 +412,17 @@ PropertyChangeListener {
 		}
 
 		c.setMyProxyPort(port);
+	}
+
+	public void set_myproxy_username(String un) {
+		myLogger.debug("Setting myproxy username to: " + un);
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return;
+		}
+
+		c.setMyProxyUsername(un);
+
 	}
 
 	private synchronized void setCredential(AbstractCred c) {
@@ -442,6 +472,10 @@ PropertyChangeListener {
 		setCredential(currentCredential);
 
 		currentCredential.addPropertyChangeListener(this);
+
+		String proxyPath = proxy_path();
+
+		myLogger.debug("Saved proxy to: " + proxyPath);
 
 		return true;
 	}

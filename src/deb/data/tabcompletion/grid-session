@@ -1,0 +1,33 @@
+getgroups()
+{
+	echo `grid-session groups`
+}
+
+_grid-session()
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="credential_type destroy dn group_proxy_path groups is_logged_in is_renewable is_uploaded lifetime list_institutions login logout myproxy_host myproxy_password myproxy_port myproxy_username ping proxy_path refresh set_min_lifetime set_myproxy_host set_myproxy_password set_myproxy_port set_myproxy_username shutdown start status stop upload"
+
+
+    #
+    #  Complete the arguments to some of the basic commands.
+    #
+    case "${prev}" in
+	group_proxy_path)
+	    if [ -z "$_grid_session_groups" ]; then
+		_grid_session_groups=$(getgroups)
+	    fi
+	    COMPREPLY=( $(compgen -W "${_grid_session_groups}" -- ${cur}) )
+            return 0
+            ;;
+        *)
+        ;;
+    esac
+
+   COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
+   return 0
+}
+complete -F _grid-session grid-session

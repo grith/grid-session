@@ -2,7 +2,6 @@ package grith.gridsession
 
 
 import grisu.jcommons.configuration.CommonGridProperties
-import grisu.jcommons.constants.GridEnvironment
 import grisu.jcommons.constants.Enums.LoginType
 import grisu.jcommons.utils.EnvironmentVariableHelpers
 import grisu.jcommons.view.cli.CliHelpers
@@ -15,13 +14,22 @@ class CliSessionControl extends SessionClient {
 
 	public static void main(String[] args) throws Exception {
 
-		EnvironmentVariableHelpers.loadEnvironmentVariablesToSystemProperties();
+		EnvironmentVariableHelpers.loadEnvironmentVariablesToSystemProperties()
 
-		CliSessionControl control = new CliSessionControl();
+		CliSessionControl control = new CliSessionControl()
 
-		myLogger.debug("Executing command.");
+		myLogger.debug("Executing command.")
 
-		control.runCommand(args);
+		if ( ! args || args.length == 0 ) {
+
+			if ( control.sm.is_logged_in() ) {
+				args = ['status']
+			} else {
+				args = ['start']
+			}
+		}
+
+		control.runCommand(args)
 	}
 
 
@@ -41,9 +49,12 @@ class CliSessionControl extends SessionClient {
 
 	public void runCommand(List<String> commandline) {
 
-		def command = commandline[0]
+		def command
 		def result
-		def args = commandline.drop(1)
+		def args
+		command = commandline[0]
+		args = commandline.drop(1)
+
 		try {
 			args = prepare(command, args)
 		} catch (all) {
@@ -69,6 +80,10 @@ class CliSessionControl extends SessionClient {
 		}
 	}
 
+	private post_login(def result) {
+		post_start(result)
+	}
+
 	private post_start(def result) {
 		if ( result ) {
 			println ("Login successful")
@@ -83,11 +98,55 @@ class CliSessionControl extends SessionClient {
 		}
 	}
 
+	private post_refresh(def result) {
+		if ( result ) {
+			println ("Refresh successful")
+		} else {
+			println ("Refresh failed")
+		}
+	}
+
+	private post_logout(def result) {
+		println "Logged out - session daemon still running"
+	}
+
+	private post_stop(def result) {
+		println "Stopped session daemon"
+	}
+
+	private post_destroy(def result) {
+		println "Destroyed credential and stopped session daemon"
+	}
+
+	private post_list_institutions(def result) {
+		for (def i : result ) {
+			println(i)
+		}
+	}
+
+	private post_proxy_path(def result) {
+		if ( ! result ) {
+			println "No proxy"
+		} else {
+			println result
+		}
+	}
+
+	private post_upload(def result) {
+		if ( result ) {
+			println "Upload successful"
+		} else {
+			println "Upload failed"
+		}
+	}
+
 	private postprocess(def command, def result) {
 		try {
 			return this."post_$command"(result)
 		} catch (all) {
-			println result
+			if ( result || result == false) {
+				println result
+			}
 		}
 	}
 
@@ -95,7 +154,16 @@ class CliSessionControl extends SessionClient {
 		try {
 			return this."$command"(args)
 		} catch (MissingMethodException e) {
-			return null
+			return args
+		}
+	}
+
+	private set_myproxy_password(def pw) {
+		if (! pw) {
+			pw = CliLogin.askPassword("Please enter the MyProxy password")
+			return pw
+		}  else {
+			return pw[0].toCharArray()
 		}
 	}
 
@@ -187,9 +255,9 @@ class CliSessionControl extends SessionClient {
 
 				def idps = sm.list_institutions()
 				idpToUse = CliLogin.ask("Your institution", lastIdp, idps,
-						"Please select the institution you are associated with:", true);
+					"Please select the institution you are associated with:", true)
 				if (!idpToUse) {
-					System.exit(0);
+					System.exit(0)
 				}
 
 
@@ -199,13 +267,13 @@ class CliSessionControl extends SessionClient {
 					idpToUse = lastIdp
 				}
 				loginConf[Credential.PROPERTY.IdP.toString()] = idpToUse
-				def msg = "Your institution username";
+				def msg = "Your institution username"
 				def lastUsername = CommonGridProperties.getDefault()
-						.getLastShibUsername();
+					.getLastShibUsername()
 
-				def username = CliLogin.ask(msg, lastUsername);
+				def username = CliLogin.ask(msg, lastUsername)
 				loginConf[Credential.PROPERTY.Username.toString()] = username
-				char[] pw = CliLogin.askPassword("Your institution password");
+				char[] pw = CliLogin.askPassword("Your institution password")
 				loginConf[Credential.PROPERTY.Password.toString()] = pw
 
 				break
@@ -213,11 +281,11 @@ class CliSessionControl extends SessionClient {
 				loginConf[Credential.PROPERTY.LoginType.toString()] = LoginType.MYPROXY
 
 				def username = CliLogin.ask("MyProxy username", CommonGridProperties
-						.getDefault().getLastMyProxyUsername());
+					.getDefault().getLastMyProxyUsername())
 
 				loginConf[Credential.PROPERTY.MyProxyUsername.toString()] = username
 
-				def pw = CliLogin.askPassword("MyProxy password");
+				def pw = CliLogin.askPassword("MyProxy password")
 				loginConf[Credential.PROPERTY.MyProxyPassword.toString()] = pw
 
 				break
@@ -248,7 +316,7 @@ class CliSessionControl extends SessionClient {
 				loginConf[Credential.PROPERTY.LoginType.toString()] = LoginType.X509_CERTIFICATE
 
 				char[] pw = CliLogin
-						.askPassword("Please enter your certificate passphrase");
+					.askPassword("Please enter your certificate passphrase")
 
 				loginConf[Credential.PROPERTY.Password.toString()] = pw
 
@@ -261,16 +329,5 @@ class CliSessionControl extends SessionClient {
 		loginConf[Credential.PROPERTY.StorePasswordInMemory.toString()] = true
 
 		return loginConf
-	}
-
-	private upload(def args) {
-		if (! args ) {
-			def msg = 'Please enter myproxy server to upload to'
-			args = CliLogin.ask(msg, GridEnvironment.getDefaultMyProxyServer())
-		} else {
-			args = args[0]
-		}
-
-		return args
 	}
 }
