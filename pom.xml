@@ -426,6 +426,17 @@
 										</source>
 									</sources>
 								</mapping>
+								<mapping>
+									<directory>/etc/bash_completion.d</directory>
+									<filemode>644</filemode>
+									<username>root</username>
+									<groupname>root</groupname>
+									<sources>
+										<source>
+											<location>src/deb/data/tabcompletion/grid-session</location>
+										</source>
+									</sources>
+								</mapping>
 							</mappings>
 							<requires>
 								<require>nesi</require>
