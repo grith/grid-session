@@ -5,6 +5,8 @@ import grisu.jcommons.dependencies.BouncyCastleTool;
 import grisu.jcommons.utils.DefaultGridSecurityProvider;
 import grisu.jcommons.utils.EnvironmentVariableHelpers;
 import grisu.jcommons.utils.JythonHelpers;
+import grith.jgrith.utils.CertificateFiles;
+import grith.jgrith.utils.VomsesFiles;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -64,6 +66,11 @@ public class SessionClient {
 			myLogger.debug("Creating SessionClient");
 		}
 		this.logout = logout;
+
+		EnvironmentVariableHelpers.loadEnvironmentVariablesToSystemProperties();
+
+		CertificateFiles.copyCACerts(false);
+		VomsesFiles.copyVomses(VomsesFiles.DEFAULT_VOS);
 		BouncyCastleTool.initBouncyCastle();
 
 		if (useSSL) {
@@ -131,7 +138,6 @@ public class SessionClient {
 
 		}
 
-		EnvironmentVariableHelpers.loadEnvironmentVariablesToSystemProperties();
 		Thread.currentThread().setName("main");
 		JythonHelpers.setJythonCachedir();
 
@@ -340,8 +346,13 @@ public class SessionClient {
 					"Can't create daemon startup arguments...");
 		}
 
+		String proxyLocation = System.getProperty("X509_USER_PROXY");
+		myLogger.debug("Proxy location: " + proxyLocation);
 		args.clear();
 		args.add("java");
+		if (StringUtils.isNotBlank(proxyLocation)) {
+			args.add("-DX509_USER_PROXY=" + proxyLocation);
+		}
 		args.add(memMin);
 		args.add(memMax);
 		args.add("-cp");
