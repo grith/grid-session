@@ -6,6 +6,7 @@ import grith.jgrith.cred.Cred;
 import grith.jgrith.cred.GridLoginParameters;
 import grith.jgrith.cred.callbacks.CliCallback;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +48,11 @@ public class GridClient extends SessionClient {
 
 				cred = new GridSessionCred(this);
 				boolean force = getLoginParameters().isForceAuthenticate();
+
+				String mpHost = getLoginParameters().getMyProxyHost();
+				if (StringUtils.isNotBlank(mpHost)) {
+					cred.setMyProxyHost(mpHost);
+				}
 
 				if (force || !cred.isValid()) {
 
