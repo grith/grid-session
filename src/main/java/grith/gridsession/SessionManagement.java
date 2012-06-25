@@ -103,6 +103,7 @@ PropertyChangeListener {
 	// getCredential();
 	// }
 
+	@Override
 	public String credential_type() {
 
 		Cred c = getCredential();
@@ -124,6 +125,7 @@ PropertyChangeListener {
 
 	}
 
+	@Override
 	public void destroy() {
 
 		myLogger.debug("Destroyting credential");
@@ -137,6 +139,7 @@ PropertyChangeListener {
 
 	}
 
+	@Override
 	public String dn() {
 		myLogger.debug("Getting DN");
 		Cred c = getCredential();
@@ -162,6 +165,7 @@ PropertyChangeListener {
 
 	}
 
+	@Override
 	public String group_proxy_path(String group) {
 		myLogger.debug("Group proxy path for: {}", group);
 		AbstractCred c = getCredential();
@@ -178,6 +182,7 @@ PropertyChangeListener {
 
 	}
 
+	@Override
 	public List<String> groups() {
 
 		AbstractCred c = getCredential();
@@ -194,6 +199,7 @@ PropertyChangeListener {
 	 *
 	 * @see grith.jgrith.session.ISessionManagement#isLoggedIn()
 	 */
+	@Override
 	public Boolean is_logged_in() {
 		myLogger.debug("Is logged in?");
 		Cred currentCredential = getCredential();
@@ -203,6 +209,7 @@ PropertyChangeListener {
 		return currentCredential.isValid();
 	}
 
+	@Override
 	public boolean is_renewable() {
 		myLogger.debug("Checking renewability...");
 		AbstractCred c = getCredential();
@@ -213,6 +220,7 @@ PropertyChangeListener {
 		return c.isRenewable();
 	}
 
+	@Override
 	public Boolean is_uploaded() {
 		AbstractCred c = getCredential();
 		if (c == null) {
@@ -221,6 +229,7 @@ PropertyChangeListener {
 		return c.isUploaded();
 	}
 
+	@Override
 	public Boolean is_uploaded(String group) {
 		AbstractCred c = getCredential();
 		if (c == null) {
@@ -230,6 +239,7 @@ PropertyChangeListener {
 		return gc.isUploaded();
 	}
 
+	@Override
 	public int lifetime() {
 
 		myLogger.debug("Remaining lifetime...");
@@ -242,6 +252,7 @@ PropertyChangeListener {
 		return currentCredential.getRemainingLifetime();
 	}
 
+	@Override
 	public List<String> list_institutions() {
 		myLogger.debug("List institutions...");
 		try {
@@ -263,10 +274,12 @@ PropertyChangeListener {
 	// return true;
 	// }
 
+	@Override
 	public Boolean login(Map<String, Object> config) {
 		return start(config);
 	}
 
+	@Override
 	public void logout() {
 		myLogger.debug("Logging out...");
 		Cred currentCredential = getCredential();
@@ -279,6 +292,7 @@ PropertyChangeListener {
 	}
 
 
+	@Override
 	public String myproxy_host() {
 		myLogger.debug("MyProxy Host...");
 		AbstractCred c = getCredential();
@@ -290,6 +304,7 @@ PropertyChangeListener {
 
 	}
 
+	@Override
 	public String myproxy_password() {
 		myLogger.debug("MyProxy password...");
 		AbstractCred c = getCredential();
@@ -300,6 +315,7 @@ PropertyChangeListener {
 		return new String(c.getMyProxyPassword());
 	}
 
+	@Override
 	public String myproxy_password(String group) {
 		AbstractCred c = getCredential();
 		if (c == null) {
@@ -309,6 +325,7 @@ PropertyChangeListener {
 		return new String(gc.getMyProxyPassword());
 	}
 
+	@Override
 	public int myproxy_port() {
 		myLogger.debug("MyProxy port...");
 		myLogger.debug("myproxy port");
@@ -320,6 +337,7 @@ PropertyChangeListener {
 		return c.getMyProxyPort();
 	}
 
+	@Override
 	public String myproxy_username() {
 		myLogger.debug("MyProxy Username...");
 		AbstractCred c = getCredential();
@@ -330,6 +348,7 @@ PropertyChangeListener {
 		return c.getMyProxyUsername();
 	}
 
+	@Override
 	public String myproxy_username(String group) {
 		AbstractCred c = getCredential();
 		if (c == null) {
@@ -339,17 +358,20 @@ PropertyChangeListener {
 		return gc.getMyProxyUsername();
 	}
 
+	@Override
 	public String ping() {
 		myLogger.debug("Ping...");
 		return "ping";
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 
 
 		myLogger.debug("EVENT: "+evt.getNewValue().toString());
 	}
 
+	@Override
 	public String proxy_path() {
 		myLogger.debug("Proxy path...");
 		AbstractCred c = getCredential();
@@ -362,6 +384,7 @@ PropertyChangeListener {
 		return c.getProxyPath();
 	}
 
+	@Override
 	public boolean refresh() {
 		myLogger.debug("Refreshing...");
 		AbstractCred currentCredential = getCredential();
@@ -369,6 +392,7 @@ PropertyChangeListener {
 		return currentCredential.refresh();
 	}
 
+	@Override
 	public boolean set_min_lifetime(Integer seconds) {
 		myLogger.debug("setting min lifetime to {} seconds", seconds);
 		AbstractCred currentCredential = getCredential();
@@ -380,6 +404,7 @@ PropertyChangeListener {
 
 	}
 
+	@Override
 	public void set_myproxy_host(String myProxyServer) {
 		myLogger.debug("Setting myproxy host");
 		AbstractCred c = getCredential();
@@ -392,6 +417,7 @@ PropertyChangeListener {
 	}
 
 
+	@Override
 	public void set_myproxy_password(char[] pw) {
 		myLogger.debug("Setting myproxy password");
 		AbstractCred c = getCredential();
@@ -403,6 +429,7 @@ PropertyChangeListener {
 
 	}
 
+	@Override
 	public void set_myproxy_port(int port) {
 
 		myLogger.debug("Setting myproxy host");
@@ -414,6 +441,7 @@ PropertyChangeListener {
 		c.setMyProxyPort(port);
 	}
 
+	@Override
 	public void set_myproxy_username(String un) {
 		myLogger.debug("Setting myproxy username to: " + un);
 		AbstractCred c = getCredential();
@@ -429,6 +457,7 @@ PropertyChangeListener {
 		cred = c;
 	}
 
+	@Override
 	public boolean shutdown() {
 
 		myLogger.debug("Shutting down...");
@@ -453,6 +482,7 @@ PropertyChangeListener {
 		return true;
 	}
 
+	@Override
 	public synchronized Boolean start(Map<String, Object> config) {
 		myLogger.debug("Logging in...");
 		AbstractCred c = cred;
@@ -480,6 +510,7 @@ PropertyChangeListener {
 		return true;
 	}
 
+	@Override
 	public String status() {
 
 		myLogger.debug("getting status...");
@@ -518,6 +549,7 @@ PropertyChangeListener {
 		return output;
 	}
 
+	@Override
 	public void stop() {
 
 		myLogger.debug("Stopping daemon...");
@@ -532,6 +564,7 @@ PropertyChangeListener {
 
 	}
 
+	@Override
 	public boolean upload() {
 
 		myLogger.debug("Uploading credential");
@@ -550,6 +583,7 @@ PropertyChangeListener {
 
 	}
 
+	@Override
 	public boolean upload(String group) {
 		myLogger.debug("Uploading credential for group " + group);
 		AbstractCred c = getCredential();
@@ -577,6 +611,7 @@ PropertyChangeListener {
 		}
 	}
 
+	@Override
 	public boolean upload(String group, String myproxyhost) {
 
 		myLogger.debug("Uploading credential to " + myproxyhost);
@@ -606,6 +641,7 @@ PropertyChangeListener {
 		}
 	}
 
+	@Override
 	public boolean upload(String group, String myproxyhost,
 			String myproxyusername) {
 
@@ -641,6 +677,7 @@ PropertyChangeListener {
 		}
 	}
 
+	@Override
 	public boolean upload(String group, String myproxyhost,
 			String myproxyusername, char[] myproxypassword) {
 
@@ -676,6 +713,11 @@ PropertyChangeListener {
 			}
 		}
 
+	}
+
+	@Override
+	public int version() {
+		return ISessionManagement.API_VERSION;
 	}
 
 }

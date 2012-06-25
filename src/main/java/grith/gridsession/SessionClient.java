@@ -157,11 +157,13 @@ public class SessionClient {
 	private void initSSL() throws Exception {
 		// Create a trust manager that does not validate certificate chains
 		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+			@Override
 			public void checkClientTrusted(X509Certificate[] certs,
 					String authType) {
 				// Trust always
 			}
 
+			@Override
 			public void checkServerTrusted(X509Certificate[] chain,
 					String authType) {
 
@@ -175,6 +177,7 @@ public class SessionClient {
 				}
 			}
 
+			@Override
 			public X509Certificate[] getAcceptedIssuers() {
 
 				return null;
@@ -185,6 +188,7 @@ public class SessionClient {
 		SSLContext sc = SSLContext.getInstance("TLS");
 		// Create empty HostnameVerifier
 		HostnameVerifier hv = new HostnameVerifier() {
+			@Override
 			public boolean verify(String arg0, SSLSession arg1) {
 				return true;
 			}
@@ -269,6 +273,35 @@ public class SessionClient {
 					ping = getSession().ping();
 					myLogger.debug("Ping response: " + ping);
 					;
+
+					myLogger.debug("Checking version...");
+					try {
+						int version = getSession().version();
+						if ( version > ISessionManagement.API_VERSION ) {
+							System.out
+									.println("New version of grid-session service detected. Will continue to run this client, in case of errors please update it.");
+							myLogger.debug("New version of grid-session service detected. Will continue to run this client, in case of errors please update it.");
+						} else if (version < ISessionManagement.API_VERSION) {
+							getSession().stop();
+
+							myLogger.error("Old version of grid-session service detected and stopped. Please restart this application to start an updated version.");
+							System.out
+									.println("Old version of grid-session service detected and stopped. Please restart this application to start an updated version.");
+							System.exit(1);
+						} else {
+							myLogger.debug("Same version of client and server. Good...");
+						}
+					} catch (Exception e) {
+						myLogger.debug("Version method could not be executed. Probably means old client...");
+
+						getSession().stop();
+
+						myLogger.error("Old version of grid-session service detected and stopped. Please restart this application to start an updated version.");
+						System.out
+						.println("Old version of grid-session service detected and stopped. Please restart this application to start an updated version.");
+						System.exit(1);
+
+					}
 
 					break;
 

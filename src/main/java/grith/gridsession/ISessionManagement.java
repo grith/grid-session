@@ -5,6 +5,8 @@ import java.util.Map;
 
 public interface ISessionManagement {
 
+	public static final Integer API_VERSION = 1;
+
 	public String credential_type();
 
 	public abstract void destroy();
@@ -78,5 +80,7 @@ public interface ISessionManagement {
 
 	public boolean upload(String group, String myproxyhost,
 			String myproxyusername, char[] myproxypassword);
+
+	public int version();
 
 }
