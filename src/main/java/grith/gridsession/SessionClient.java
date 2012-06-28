@@ -378,7 +378,7 @@ public class SessionClient {
 				continue;
 			}
 
-			if (arg.equals("-cp")) {
+			if (arg.equals("-cp") || arg.equals("-classpath")) {
 				classpath = args.get(i + 1);
 				continue;
 			}
