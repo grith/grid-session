@@ -120,7 +120,18 @@ public class SessionClient {
 
 				if (!alreadyRunning) {
 					if (!d.isDaemonized() || !logout) {
-						startDaemon(d);
+						try {
+							startDaemon(d);
+						} catch (RuntimeException e) {
+							myLogger.error("Can't start daemon: " + e, e);
+							myLogger.error("Starting session within this process...");
+							try {
+								GridSessionDaemon daemon = new GridSessionDaemon();
+
+							} catch (Exception e2) {
+								e2.printStackTrace();
+							}
+						}
 					}
 				}
 
@@ -279,14 +290,14 @@ public class SessionClient {
 						int version = getSession().version();
 						if ( version > ISessionManagement.API_VERSION ) {
 							System.out
-									.println("New version of grid-session service detected. Will continue to run this client, in case of errors please update it.");
+							.println("New version of grid-session service detected. Will continue to run this client, in case of errors please update it.");
 							myLogger.debug("New version of grid-session service detected. Will continue to run this client, in case of errors please update it.");
 						} else if (version < ISessionManagement.API_VERSION) {
 							getSession().stop();
 
 							myLogger.error("Old version of grid-session service detected and stopped. Please restart this application to start an updated version.");
 							System.out
-									.println("Old version of grid-session service detected and stopped. Please restart this application to start an updated version.");
+							.println("Old version of grid-session service detected and stopped. Please restart this application to start an updated version.");
 							System.exit(1);
 						} else {
 							myLogger.debug("Same version of client and server. Good...");
