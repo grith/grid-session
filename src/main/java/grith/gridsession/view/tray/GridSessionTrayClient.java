@@ -2,6 +2,7 @@ package grith.gridsession.view.tray;
 
 import grisu.jcommons.configuration.CommonGridProperties;
 import grisu.jcommons.utils.DefaultExceptionHandler;
+import grisu.jcommons.utils.EnvironmentVariableHelpers;
 import grith.gridsession.GridClient;
 
 import java.awt.AWTException;
@@ -26,6 +27,8 @@ PropertyChangeListener {
 		System.setProperty(
 				CommonGridProperties.Property.DAEMONIZE_GRID_SESSION.toString(),
 				"false");
+
+		EnvironmentVariableHelpers.loadEnvironmentVariablesToSystemProperties();
 
 		Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler());
 
@@ -57,7 +60,7 @@ PropertyChangeListener {
 	private final Image loadingIcon;
 
 	private final GridSessionMenu popup;
-	private JXTrayIcon trayIcon;
+	private final JXTrayIcon trayIcon;
 	private final SystemTray tray = SystemTray.getSystemTray();
 
 	private final GridSessionController controller;
@@ -93,6 +96,7 @@ PropertyChangeListener {
 
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 
 		if ( "online".equals(evt.getPropertyName()) ) {
