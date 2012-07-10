@@ -99,7 +99,8 @@ public class SessionClient {
 			boolean daemonize = CommonGridProperties.getDefault()
 					.daemonizeGridSession();
 
-			if (!currentOs.contains("WINDOWS") && daemonize) {
+			if (!(currentOs.contains("WINDOWS") || currentOs.contains("MAC"))
+					&& daemonize) {
 				Daemon d = new Daemon();
 
 				boolean alreadyRunning = false;

@@ -13,7 +13,6 @@ import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 
 import com.google.common.collect.Maps;
-
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -144,6 +143,14 @@ public class GridSessionCredPanel extends CredPanel {
 			String lifetime = WalltimeUtils.convertSeconds(cred
 					.getRemainingLifetime());
 			props.put("Remaining lifetime", lifetime);
+
+			boolean autorenews = cred.isRenewable();
+			if (autorenews) {
+				props.put("Auto-refresh", "yes");
+			} else {
+				props.put("Auto-refresh",
+						"no (to enable, re-login via one of the other methods)");
+			}
 			// props.put("Login type", cred.g)
 			propText = generateHtml(props);
 		}
