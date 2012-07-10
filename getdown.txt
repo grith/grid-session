@@ -23,9 +23,10 @@ code = grid-session-bin.jar
 # The main entry point for the application
 class = grith.gridsession.view.tray.GridSessionTrayClient
 
-jvmarg = -DX509_USER_PROXY=~/.grid/grid.proxy
+jvmarg = [linux] -DX509_USER_PROXY=~/.grid/grid.proxy
+jvmarg = [mac os x] -DX509_USER_PROXY=~/.grid/grid.proxy
+jvmarg = [windows] -DX509_USER_PROXY=%APPDIR%\..\..\..\..\.grid\grid.proxy
+
+
 jvmarg = -Xms32M
 jvmarg = -Xmx32M
-#jvmarg = -Djava.library.path=%APPDIR%/native
-#jvmarg = -Dappdir=%APPDIR%
-#jvmarg = -Dversion=%VERSION%
