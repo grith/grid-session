@@ -13,6 +13,7 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.error.ErrorInfo;
@@ -212,6 +213,16 @@ public class CredCreationPanel extends JPanel {
 
 		GridSessionCred cred = new GridSessionCred(this.sessionClient);
 		getGridSessionCredPanel().setCred(cred);
+
+		if (getGridSessionCredPanel().validGridSessionCredentialExists()) {
+			SwingUtilities.invokeLater(new Thread() {
+				@Override
+				public void run() {
+					tabbedPane.setSelectedIndex(0);
+				}
+			});
+		}
+
 	}
 
 	public void setUseSSL(boolean use) {
