@@ -46,14 +46,20 @@ public class CredCreationPanel extends JPanel {
 
 	private Cred lastCredential = null;
 
+	public CredCreationPanel() {
+		this(null);
+	}
 	/**
 	 * Create the panel.
 	 */
-	public CredCreationPanel() {
+	public CredCreationPanel(SessionClient client) {
+		if ( client != null ) {
+			setSessionClient(client);
+		}
 		setLayout(new FormLayout(
 				new ColumnSpec[] { ColumnSpec.decode("166px:grow"), },
 				new RowSpec[] { FormFactory.LINE_GAP_ROWSPEC,
-						RowSpec.decode("25px:grow"),
+						FormFactory.MIN_ROWSPEC,
 						FormFactory.RELATED_GAP_ROWSPEC, }));
 		add(getTabbedPane(), "1, 2, fill, fill");
 
@@ -169,6 +175,12 @@ public class CredCreationPanel extends JPanel {
 			tabbedPane.addTab(getX509CredentialPanel().getCredTitle(), null,
 					getX509CredentialPanel(), null);
 			tabbedPane.addTab(getMyProxyCredPanel().getCredTitle(), null, getMyProxyCredPanel(), null);
+
+			if (getGridSessionCredPanel().validGridSessionCredentialExists()) {
+				tabbedPane.setSelectedIndex(0);
+			} else {
+				tabbedPane.setSelectedIndex(1);
+			}
 		}
 		return tabbedPane;
 	}

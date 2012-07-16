@@ -130,7 +130,7 @@ public class GridSessionCredPanel extends CredPanel {
 	private void setProperties() {
 
 		String propText = null;
-		if ((cred == null) || !cred.isValid()) {
+		if (!validGridSessionCredentialExists()) {
 			propText = "No existing session";
 		} else {
 
@@ -158,5 +158,14 @@ public class GridSessionCredPanel extends CredPanel {
 
 
 
+	}
+
+	public boolean validGridSessionCredentialExists() {
+
+		if ((cred == null) || !cred.isValid()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }
