@@ -90,8 +90,26 @@ public class SessionClient {
 
 	protected final void execute() {
 
+		boolean alreadyRunning = false;
+		// check whether server already running
+		try {
+			myLogger.debug("Checking whether grid-session server is running...");
+			ServerSocket s = new ServerSocket(RpcPort.getUserPort());
+			s.close();
+			myLogger.debug("No grid session server running.");
+		} catch (BindException be) {
+			// that's good, means something already running, we don't
+			// need to try to daemonize...
+			myLogger.debug("Server already running...");
+			alreadyRunning = true;
+		} catch (Exception e) {
+			myLogger.error("Error trying to connect to grid-session daemon.", e);
+		}
 
-		if (CommonGridProperties.getDefault().useGridSession()) {
+
+		if (alreadyRunning
+				|| CommonGridProperties.getDefault()
+				.startGridSessionThreadOrDaemon()) {
 			// check whether we run on windows, if that is the case, we can't
 			// daemonize...
 			String currentOs = System.getProperty("os.name").toUpperCase();
@@ -99,45 +117,30 @@ public class SessionClient {
 			boolean daemonize = CommonGridProperties.getDefault()
 					.daemonizeGridSession();
 
+
+
 			if (!(currentOs.contains("WINDOWS") || currentOs.contains("MAC"))
-					&& daemonize) {
+					&& daemonize && !alreadyRunning) {
 				Daemon d = new Daemon();
 
-				boolean alreadyRunning = false;
-				// check whether server already running
-				try {
-					ServerSocket s = new ServerSocket(RpcPort.getUserPort());
-					s.close();
-				} catch (BindException be) {
-					// that's good, means something already running, we don't
-					// need to try to daemonize...
-					myLogger.debug("Server already running...");
-					alreadyRunning = true;
-				} catch (Exception e) {
-					myLogger.error(
-							"Error trying to connect to grid-session daemon.",
-							e);
-				}
 
-				if (!alreadyRunning) {
-					if (!d.isDaemonized() || !logout) {
+
+				if (!d.isDaemonized() || !logout) {
+					try {
+						startDaemon(d);
+					} catch (RuntimeException e) {
+						myLogger.error("Can't start daemon: " + e, e);
+						myLogger.error("Starting session within this process...");
 						try {
-							startDaemon(d);
-						} catch (RuntimeException e) {
-							myLogger.error("Can't start daemon: " + e, e);
-							myLogger.error("Starting session within this process...");
-							try {
-								GridSessionDaemon daemon = new GridSessionDaemon();
+							GridSessionDaemon daemon = new GridSessionDaemon();
 
-							} catch (Exception e2) {
-								e2.printStackTrace();
-							}
+						} catch (Exception e2) {
+							e2.printStackTrace();
 						}
 					}
 				}
 
-			} else {
-
+			} else if (!alreadyRunning) {
 				try {
 					myLogger.debug("Starting session service...");
 					GridSessionDaemon daemon = new GridSessionDaemon();
@@ -145,8 +148,9 @@ public class SessionClient {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
 			}
+
+
 
 		}
 
@@ -154,7 +158,12 @@ public class SessionClient {
 		JythonHelpers.setJythonCachedir();
 
 		try {
-			startClient();
+			if (alreadyRunning) {
+				startClient(true);
+			} else {
+				startClient(CommonGridProperties.getDefault()
+						.startGridSessionThreadOrDaemon());
+			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -230,19 +239,22 @@ public class SessionClient {
 		this.useSSL = useSSL;
 	}
 
-	protected synchronized void startClient() throws Exception {
+	protected synchronized void startClient(boolean gridSessionServerRunning)
+			throws Exception {
 
 		String ping = null;
 
-		if (!CommonGridProperties.getDefault().useGridSession()) {
+		if (!gridSessionServerRunning) {
 			if (logout) {
 				myLogger.debug("Logging out from non-grid-session client...");
 				System.exit(0);
 			}
+			myLogger.debug("Starting non-RPC grid session...");
 			sm = new SessionManagement();
 			return;
 		}
 		if (!clientStarted) {
+			myLogger.debug("Starting RPC grid session..");
 			int tries = 0;
 			// create configuration
 			RpcAuthToken auth = new RpcAuthToken();

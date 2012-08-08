@@ -93,15 +93,6 @@ PropertyChangeListener {
 	public SessionManagement() {
 	}
 
-	// public SessionManagement(String location) {
-	//
-	// if (StringUtils.isBlank(location)) {
-	// this.location = CoGProperties.getDefault().getProxyFile();
-	// } else {
-	// this.location = location;
-	// }
-	// getCredential();
-	// }
 
 	@Override
 	public String credential_type() {

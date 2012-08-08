@@ -1,6 +1,5 @@
 package grith.gridsession;
 
-import grisu.jcommons.configuration.CommonGridProperties;
 import grisu.jcommons.exceptions.CredentialException;
 import grith.jgrith.cred.Cred;
 import grith.jgrith.credential.Credential.PROPERTY;
@@ -14,8 +13,8 @@ import com.google.common.collect.Maps;
 
 public class GridSessionCred implements Cred {
 
-	public static boolean useGridSession = CommonGridProperties.getDefault()
-			.useGridSession();
+	// public static boolean useGridSession = CommonGridProperties.getDefault()
+	// .useGridSession();
 
 	static final Logger myLogger = LoggerFactory
 			.getLogger(GridSessionCred.class.getName());
