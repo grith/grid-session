@@ -4,6 +4,8 @@ import grisu.jcommons.configuration.CommonGridProperties;
 import grisu.jcommons.utils.DefaultExceptionHandler;
 import grisu.jcommons.utils.EnvironmentVariableHelpers;
 import grith.gridsession.GridClient;
+import grith.jgrith.utils.CertificateFiles;
+import grith.jgrith.utils.VomsesFiles;
 
 import java.awt.AWTException;
 import java.awt.Dimension;
@@ -11,11 +13,13 @@ import java.awt.Image;
 import java.awt.SystemTray;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collection;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import com.google.common.collect.Sets;
 import com.jgoodies.common.base.SystemUtils;
 import com.jgoodies.looks.Options;
 
@@ -31,6 +35,10 @@ PropertyChangeListener {
 		EnvironmentVariableHelpers.loadEnvironmentVariablesToSystemProperties();
 
 		Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler());
+
+		Collection<String> vos = Sets.newHashSet("nz");
+		VomsesFiles.copyVomses(vos);
+		CertificateFiles.copyCACerts(false);
 
 		myLogger.debug("Setting look and feel.");
 
