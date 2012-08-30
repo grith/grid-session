@@ -22,6 +22,7 @@ PropertyChangeListener {
 			putValue(SHORT_DESCRIPTION, "Show MyProxy upload dialog");
 		}
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			controller.showGroupMyProxyDialog(Constants.NON_VO_FQAN);
 
@@ -124,6 +125,7 @@ PropertyChangeListener {
 
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 
 		if ("online".equals(evt.getPropertyName())) {

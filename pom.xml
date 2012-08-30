@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>nesi</artifactId>
 		<groupId>nz.org.nesi</groupId>
-		<version>0.17</version>
+		<version>0.19</version>
 	</parent>
 
 
@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>grith</groupId>
 			<artifactId>jgrith</artifactId>
-			<version>0.7-rc3-SNAPSHOT</version>
+			<version>0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
