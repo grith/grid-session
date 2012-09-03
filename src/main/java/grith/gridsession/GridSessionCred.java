@@ -115,6 +115,16 @@ public class GridSessionCred implements Cred {
 	}
 
 	@Override
+	public String saveProxy() {
+		return session.getSession().save_proxy();
+	}
+
+	@Override
+	public String saveProxy(String path) {
+		return session.getSession().save_proxy(path);
+	}
+
+	@Override
 	public void setMinimumLifetime(int lifetimeInSeconds) {
 		session.getSession().set_min_lifetime(lifetimeInSeconds);
 

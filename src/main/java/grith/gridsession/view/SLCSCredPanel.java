@@ -93,6 +93,14 @@ public class SLCSCredPanel extends CredPanel {
 					.getLastShibIdp();
 			if (StringUtils.isNotBlank(lastIdp)) {
 				idpModel.addElement(lastIdp);
+			} else {
+				// SwingUtilities.invokeLater(new Thread() {
+				// @Override
+				// public void run() {
+				idpModel.addElement("Loading list of institutions...");
+				// comboBox.setEnabled(false);
+				// }
+				// });
 			}
 		}
 		return comboBox;

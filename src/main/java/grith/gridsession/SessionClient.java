@@ -1,6 +1,7 @@
 package grith.gridsession;
 
 import grisu.jcommons.configuration.CommonGridProperties;
+import grisu.jcommons.configuration.CommonGridProperties.Property;
 import grisu.jcommons.dependencies.BouncyCastleTool;
 import grisu.jcommons.utils.DefaultGridSecurityProvider;
 import grisu.jcommons.utils.EnvironmentVariableHelpers;
@@ -55,17 +56,24 @@ public class SessionClient {
 	private boolean clientStarted = false;
 
 	public SessionClient() throws Exception {
-		this(false);
+		this(false, false);
 	}
 
 
-	public SessionClient(boolean logout) throws Exception {
+	public SessionClient(boolean logout, boolean startSession) throws Exception {
 		if (logout) {
 			myLogger.debug("Creating SessionClient for logout");
 		} else {
 			myLogger.debug("Creating SessionClient");
 		}
 		this.logout = logout;
+
+		CommonGridProperties.getDefault().setGridProperty(
+				Property.USE_GRID_SESSION, Boolean.toString(startSession));
+		CommonGridProperties.getDefault()
+				.setGridProperty(
+				Property.DAEMONIZE_GRID_SESSION, Boolean.toString(startSession));
+
 
 		EnvironmentVariableHelpers.loadEnvironmentVariablesToSystemProperties();
 

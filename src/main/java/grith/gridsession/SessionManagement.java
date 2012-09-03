@@ -383,6 +383,27 @@ PropertyChangeListener {
 		return currentCredential.refresh();
 	}
 
+	public String save_proxy() {
+		return save_proxy(null);
+	}
+
+	public String save_proxy(String path) {
+
+		myLogger.debug("Saving credential to "+path);
+		AbstractCred c = getCredential();
+		if (c == null) {
+			return "";
+		}
+
+		try {
+			c.saveProxy(path);
+			return c.getProxyPath();
+		} catch (Exception e) {
+			myLogger.error("Can't upload to myproxy: {}", e);
+			return "";
+		}
+	}
+
 	@Override
 	public boolean set_min_lifetime(Integer seconds) {
 		myLogger.debug("setting min lifetime to {} seconds", seconds);

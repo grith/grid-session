@@ -16,7 +16,7 @@ public class GroupMyProxyDialog extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			SessionClient s = new SessionClient(false);
+			SessionClient s = new SessionClient(false, false);
 			GridSessionController gsc = new GridSessionController(s);
 			gsc.init();
 

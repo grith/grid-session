@@ -4,6 +4,7 @@ import grisu.jcommons.configuration.CommonGridProperties;
 import grith.jgrith.cred.AbstractCred;
 import grith.jgrith.cred.Cred;
 import grith.jgrith.cred.GridLoginParameters;
+import grith.jgrith.cred.ProxyCred;
 import grith.jgrith.cred.callbacks.CliCallback;
 
 import org.apache.commons.lang.StringUtils;
@@ -27,7 +28,7 @@ public class GridClient extends SessionClient {
 	}
 
 	public GridClient(GridLoginParameters loginParams) throws Exception {
-		super(loginParams.isLogout());
+		super(loginParams.isLogout(), loginParams.isStartGridSessionDeamon());
 		this.loginParams = loginParams;
 	}
 
@@ -66,13 +67,23 @@ public class GridClient extends SessionClient {
 
 				}
 			} else {
-				if (!getLoginParameters().validConfig()) {
-					myLogger.debug("Trying to retieve remaining login details.");
-					getLoginParameters().setCallback(new CliCallback());
-					getLoginParameters().populate();
+
+				try {
+					cred = new ProxyCred();
+				} catch (Exception e) {
+					myLogger.debug("Can't find valid credential, creating new one...");
 				}
-				cred = AbstractCred.loadFromConfig(getLoginParameters()
-						.getCredProperties());
+
+				if ((cred == null) || !cred.isValid()) {
+
+					if (!getLoginParameters().validConfig()) {
+						myLogger.debug("Trying to retieve remaining login details.");
+						getLoginParameters().setCallback(new CliCallback());
+						getLoginParameters().populate();
+					}
+					cred = AbstractCred.loadFromConfig(getLoginParameters()
+							.getCredProperties());
+				}
 			}
 		}
 		return cred;

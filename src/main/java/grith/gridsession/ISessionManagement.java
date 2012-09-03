@@ -51,6 +51,10 @@ public interface ISessionManagement {
 
 	public boolean refresh();
 
+	public String save_proxy();
+
+	public String save_proxy(String path);
+
 	public abstract boolean set_min_lifetime(Integer lt);
 
 	public abstract void set_myproxy_host(String myProxyServer);
