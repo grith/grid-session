@@ -1,8 +1,11 @@
 package grith.gridsession;
 
 import grisu.jcommons.dependencies.BouncyCastleTool;
+import grisu.jcommons.utils.JythonHelpers;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.util.Hashtable;
@@ -13,30 +16,61 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import Acme.Serve.Serve;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.util.StatusPrinter;
 
-public class TinySessionServer implements ISessionServer {
+import com.sun.akuma.Daemon;
+
+public class GridSessionDaemon implements ISessionServer {
 
 	public static Logger myLogger = LoggerFactory
-			.getLogger(TinySessionServer.class);
+			.getLogger(GridSessionDaemon.class);
 
 	public static final int START_PORT = 49152;
 
 	public static void main(String[] args) throws Exception {
 
-		BouncyCastleTool.initBouncyCastle();
+		Daemon d = new Daemon();
 
-		// Daemon d = new Daemon();
-		//
-		// if (d.isDaemonized()) {
-		// d.init();
-		// } else {
-		//
-		// d.daemonize();
-		// System.exit(0);
-		// }
+		d.init();
 
-		System.out.println("Starting server...");
-		TinySessionServer s = new TinySessionServer();
+		try {
+
+			File file = new File("/tmp/jna");
+			file.mkdirs();
+
+			file.setWritable(true, false);
+
+		} catch (Exception e) {
+			myLogger.error("Can't create dir or change permissions for /tmp/jna: "
+					+ e.getLocalizedMessage());
+		}
+
+		try {
+			LoggerContext context = (LoggerContext) LoggerFactory
+					.getILoggerFactory();
+			JoranConfigurator configurator = new JoranConfigurator();
+			configurator.setContext(context);
+
+			InputStream config = SessionClient.class
+					.getResourceAsStream("/logback_server.xml");
+
+			context.reset();
+			configurator.doConfigure(config);
+
+			StatusPrinter.printInCaseOfErrorsOrWarnings(context);
+		} catch (Exception e) {
+			myLogger.error("Error when trying to configure grid-session service logging");
+
+		}
+
+		Thread.currentThread().setName("main");
+		JythonHelpers.setJythonCachedir();
+
+		GridSessionDaemon s = new GridSessionDaemon();
+
+		myLogger.debug("GridSessionService started");
 
 
 	}
@@ -48,7 +82,8 @@ public class TinySessionServer implements ISessionServer {
 	private RPCKeyStore ks;
 	private RpcAuthToken auth;
 
-	public TinySessionServer() throws Exception {
+	public GridSessionDaemon() throws Exception {
+
 
 		try {
 			port = new RpcPort();
@@ -57,6 +92,7 @@ public class TinySessionServer implements ISessionServer {
 			ServerSocket s = new ServerSocket(port.getPort());
 			s.close();
 
+			BouncyCastleTool.initBouncyCastle();
 			// delete all old rpc-related things
 			FileUtils.deleteQuietly(RPCKeyStore.KEYSTORE_FILE);
 			FileUtils.deleteQuietly(RpcAuthToken.TOKEN_FILE);
@@ -91,12 +127,12 @@ public class TinySessionServer implements ISessionServer {
 				@Override
 				public void run() {
 					srv.serve();
+					myLogger.info("Service stopped.");
 				}
 			}.start();
 
 			// uhuh...
 			SessionManagement.server = this;
-
 			SessionManagement.kickOffIdpPreloading();
 
 		} catch (BindException be) {
@@ -112,6 +148,7 @@ public class TinySessionServer implements ISessionServer {
 	public void shutdown() {
 
 		try {
+			myLogger.debug("Shutting down...");
 			srv.notifyStop();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -21,17 +21,7 @@ public class RpcPort {
 		return port;
 	}
 
-	private final int port;
-
-	public RpcPort() throws Exception {
-		port = getUserPort();
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	private synchronized int getUserPort() throws Exception {
+	public static synchronized int getUserPort() throws Exception {
 
 		if ( PORT_FILE.exists() ) {
 			String p = FileUtils.readFileToString(PORT_FILE);
@@ -43,6 +33,16 @@ public class RpcPort {
 			FileUtils.writeStringToFile(PORT_FILE, Integer.toString(port));
 			return port;
 		}
+	}
+
+	private final int port;
+
+	public RpcPort() throws Exception {
+		port = getUserPort();
+	}
+
+	public int getPort() {
+		return port;
 	}
 
 	public synchronized void shutdown() {

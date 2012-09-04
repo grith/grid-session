@@ -31,8 +31,8 @@
 					<exclude>**/NOTICE</exclude>
 					<exclude>log4j.properties</exclude>
 					<exclude>logback.xml</exclude>
-					<exclude>certificates.zip</exclude>
-					<exclude>vomses.zip</exclude>
+<!-- 					<exclude>certificates.zip</exclude> -->
+<!-- 					<exclude>vomses.zip</exclude> -->
 					<exclude>arcs/__init__.py</exclude>
 				</excludes>
 			</unpackOptions>

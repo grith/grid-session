@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#unset DISPLAY
+export JAVA_OPTS="-Djava.awt.headless=false -Xmx24m"
+export X509_USER_PROXY=~/.grid/grid.proxy
+java ${JAVA_OPTS} -cp /usr/local/lib/grisu/grid-session-bin.jar grith.gridsession.view.tray.GridSessionTrayClient
+
+

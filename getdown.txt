@@ -1,0 +1,32 @@
+# The URL from which the client is downloaded
+appbase = http://code.ceres.auckland.ac.nz/snapshot-downloads/grid-session
+#appbase = http://localhost:8000/
+
+# version = VERSION_TOKEN
+
+allow_offline = true
+
+# UI Configuration
+ui.name = Grid-Session
+
+ui.background = splash.png
+ui.progress = 52, 145, 236, 15
+ui.progress_text = 747474
+ui.progress_bar = CCCCCC
+
+ui.status = 52, 178, 247, 15
+ui.status_text = 747474
+
+# Application jar files
+code = grid-session-bin.jar
+
+# The main entry point for the application
+class = grith.gridsession.view.tray.GridSessionTrayClient
+
+jvmarg = [linux] -DX509_USER_PROXY=~/.grid/grid.proxy
+jvmarg = [mac os x] -DX509_USER_PROXY=~/.grid/grid.proxy
+jvmarg = [windows] -DX509_USER_PROXY=%APPDIR%\..\..\..\..\.grid\grid.proxy
+
+
+jvmarg = -Xms32M
+jvmarg = -Xmx32M
