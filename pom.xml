@@ -8,7 +8,7 @@
 
 
 	<artifactId>grid-session</artifactId>
-	<version>0.1.2</version>
+	<version>0.2-SNAPSHOT</version>
 	<name>Grid session client</name>
 	<description>A client which runs as a daemon and takes care of grid proxy logins and which can also auto-update credentials if that is supported by the type of authentication.</description>
 
