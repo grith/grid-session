@@ -44,6 +44,7 @@ public class CredCreationPanel extends JPanel {
 	private SessionClient sessionClient;
 
 	private volatile boolean isCreatingCredential = false;
+	private volatile boolean isCredentialCreationFailed = false;
 
 	private Cred lastCredential = null;
 
@@ -98,6 +99,8 @@ public class CredCreationPanel extends JPanel {
 			isCreatingCredential = false;
 			return cred;
 		} catch (Exception e) {
+			isCredentialCreationFailed = true;
+			firePropertyChange("credentialCreationFailed", false, true);
 			throw new CredentialException("Could not create credential.", e);
 		} finally {
 			firePropertyChange("creatingCredential", true, false);
@@ -194,6 +197,10 @@ public class CredCreationPanel extends JPanel {
 	}
 	public boolean isCreatingCredential() {
 		return isCreatingCredential;
+	}
+	
+	public boolean isCredentialCreationFailed() {
+		return isCredentialCreationFailed;
 	}
 
 
