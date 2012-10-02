@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>nesi</artifactId>
 		<groupId>nz.org.nesi</groupId>
-		<version>0.20</version>
+		<version>0.21</version>
 	</parent>
 
 
@@ -34,7 +35,7 @@
 		<dependency>
 			<groupId>grith</groupId>
 			<artifactId>jgrith</artifactId>
-			<version>0.7.1</version>
+			<version>0.8-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
@@ -97,6 +98,18 @@
 	</dependencies>
 
 	<build>
+
+    <resources>
+        <!-- regular resource processsing for everything except logback.xml -->
+        <resource>
+            <directory>src/main/resources</directory>
+            <excludes>
+                <exclude>logback.xml</exclude>
+            </excludes>
+        </resource>
+
+    </resources>		
+	
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -125,8 +138,8 @@
 
 								<index>true</index>
 								<manifest>
-<!-- 									<mainClass>grith.gridsession.CliSessionControl</mainClass> -->
-								<mainClass>grith.gridsession.view.tray.GridSessionTrayClient</mainClass>
+									<!-- <mainClass>grith.gridsession.CliSessionControl</mainClass> -->
+									<mainClass>grith.gridsession.view.tray.GridSessionTrayClient</mainClass>
 								</manifest>
 								<manifestEntries>
 									<Class-Path>bcprov.jar bcprov-jdk15-145.jar</Class-Path>
@@ -142,7 +155,6 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
@@ -152,18 +164,7 @@
 					<dependency>
 						<groupId>org.codehaus.groovy</groupId>
 						<artifactId>groovy-eclipse-compiler</artifactId>
-						<version>2.5.1-M3</version>
-						<exclusions>
-							<exclusion>
-								<groupId>org.codehaus.groovy</groupId>
-								<artifactId>groovy-eclipse-batch</artifactId>
-							</exclusion>
-						</exclusions>
-					</dependency>
-					<dependency>
-						<groupId>org.codehaus.groovy</groupId>
-						<artifactId>groovy-eclipse-batch</artifactId>
-						<version>1.8.0-03</version>
+						<version>2.7.0-01</version>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -203,7 +204,8 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -464,7 +466,7 @@
 								</mapping>
 								<mapping>
 									<directory>/etc/bash_completion.d</directory>
-<!-- 									<filemode>644</filemode> -->
+									<!-- <filemode>644</filemode> -->
 									<username>root</username>
 									<groupname>root</groupname>
 									<sources>
@@ -481,9 +483,9 @@
 							<preinstallScriptlet>
 								<script>echo "Installing Grid-Session deamon..."</script>
 							</preinstallScriptlet>
-							<!-- <postinstallScriptlet> <scriptFile>src/main/scripts/postinstall</scriptFile>
-								<fileEncoding>utf-8</fileEncoding> </postinstallScriptlet> <preremoveScriptlet>
-								<scriptFile>src/main/scripts/preremove</scriptFile> <fileEncoding>utf-8</fileEncoding>
+							<!-- <postinstallScriptlet> <scriptFile>src/main/scripts/postinstall</scriptFile> 
+								<fileEncoding>utf-8</fileEncoding> </postinstallScriptlet> <preremoveScriptlet> 
+								<scriptFile>src/main/scripts/preremove</scriptFile> <fileEncoding>utf-8</fileEncoding> 
 								</preremoveScriptlet> -->
 						</configuration>
 					</plugin>
@@ -492,7 +494,7 @@
 
 
 		</profile>
-		
+
 		<profile>
 			<id>getdown</id>
 			<build>
@@ -542,7 +544,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>		
+		</profile>
 
 	</profiles>
 
