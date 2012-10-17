@@ -1,8 +1,8 @@
 package grith.gridsession;
 
 import grisu.jcommons.exceptions.CredentialException;
+import grith.jgrith.cred.AbstractCred.PROPERTY;
 import grith.jgrith.cred.Cred;
-import grith.jgrith.credential.Credential.PROPERTY;
 
 import java.util.Map;
 

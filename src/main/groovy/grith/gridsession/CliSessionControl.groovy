@@ -5,7 +5,6 @@ import grisu.jcommons.configuration.CommonGridProperties
 import grisu.jcommons.constants.Enums.LoginType
 import grisu.jcommons.utils.EnvironmentVariableHelpers
 import grisu.jcommons.view.cli.CliHelpers
-import grith.jgrith.credential.Credential
 import grith.jgrith.utils.CliLogin
 import groovy.util.logging.Slf4j
 

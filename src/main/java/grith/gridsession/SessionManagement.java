@@ -7,12 +7,12 @@ import grisu.jcommons.utils.OutputHelpers;
 import grisu.jcommons.utils.WalltimeUtils;
 import grith.jgrith.control.SlcsLoginWrapper;
 import grith.jgrith.cred.AbstractCred;
+import grith.jgrith.cred.AbstractCred.PROPERTY;
 import grith.jgrith.cred.Cred;
 import grith.jgrith.cred.MyProxyCred;
 import grith.jgrith.cred.ProxyCred;
 import grith.jgrith.cred.SLCSCred;
 import grith.jgrith.cred.X509Cred;
-import grith.jgrith.credential.Credential.PROPERTY;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

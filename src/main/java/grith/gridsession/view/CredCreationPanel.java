@@ -3,8 +3,8 @@ package grith.gridsession.view;
 import grisu.jcommons.exceptions.CredentialException;
 import grith.gridsession.GridSessionCred;
 import grith.gridsession.SessionClient;
+import grith.jgrith.cred.AbstractCred.PROPERTY;
 import grith.jgrith.cred.Cred;
-import grith.jgrith.credential.Credential.PROPERTY;
 
 import java.util.Map;
 import java.util.logging.Level;

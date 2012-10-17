@@ -3,7 +3,7 @@ package grith.gridsession.view;
 import grisu.jcommons.configuration.CommonGridProperties;
 import grisu.jcommons.constants.Enums.LoginType;
 import grith.jgrith.control.SlcsLoginWrapper;
-import grith.jgrith.credential.Credential.PROPERTY;
+import grith.jgrith.cred.AbstractCred.PROPERTY;
 
 import java.util.List;
 import java.util.Map;

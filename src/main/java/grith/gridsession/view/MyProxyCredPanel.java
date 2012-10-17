@@ -2,8 +2,8 @@ package grith.gridsession.view;
 
 import grisu.jcommons.configuration.CommonGridProperties;
 import grisu.jcommons.constants.Enums.LoginType;
+import grith.jgrith.cred.AbstractCred.PROPERTY;
 import grith.jgrith.cred.MyProxyCred;
-import grith.jgrith.credential.Credential.PROPERTY;
 
 import java.util.Map;
 
@@ -14,8 +14,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import org.apache.commons.lang.StringUtils;
-import com.google.common.collect.Maps;
 
+import com.google.common.collect.Maps;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
