@@ -167,8 +167,9 @@ public class GridSessionCred implements Cred {
 	
 	private synchronized AbstractCred getCachedCredential() {
 		if ( cachedCredential == null ) {
-			session.getSession().save_proxy(tempFilePath);
-			cachedCredential = new ProxyCred(tempFilePath);
+			// might be that it's already a proxycred, then it doesn't get saved again.ls -l
+			String temp = session.getSession().save_proxy(tempFilePath);
+			cachedCredential = new ProxyCred(temp);
 		}
 		return cachedCredential;
 	}
