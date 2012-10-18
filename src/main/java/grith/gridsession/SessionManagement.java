@@ -403,6 +403,23 @@ PropertyChangeListener {
 			return "";
 		}
 	}
+	
+	public String save_group_proxy(String fqan, String path) {
+
+		myLogger.debug("Saving group credential for group {} to {}", fqan, path);
+		AbstractCred c = getCredential().getGroupCredential(fqan);
+		if (c == null) {
+			return "";
+		}
+
+		try {
+			c.saveProxy(path);
+			return c.getProxyPath();
+		} catch (Exception e) {
+			myLogger.error("Can't upload to myproxy: {}", e);
+			return "";
+		}
+	}
 
 	@Override
 	public boolean set_min_lifetime(Integer seconds) {

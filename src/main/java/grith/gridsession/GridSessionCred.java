@@ -1,11 +1,19 @@
 package grith.gridsession;
 
+import grisu.jcommons.constants.Constants;
 import grisu.jcommons.exceptions.CredentialException;
+import grisu.model.info.dto.VO;
+import grith.jgrith.cred.AbstractCred;
 import grith.jgrith.cred.AbstractCred.PROPERTY;
 import grith.jgrith.cred.Cred;
+import grith.jgrith.cred.ProxyCred;
 
+import java.io.File;
 import java.util.Map;
+import java.util.UUID;
 
+import org.globus.common.CoGProperties;
+import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +45,18 @@ public class GridSessionCred implements Cred {
 
 	private final SessionClient session;
 
+	private final String tempFilePath = CoGProperties.getDefault().getProxyFile()+"_temp_"+UUID.randomUUID().toString();
+
+	private final File tempFile = new File(tempFilePath);
+	
+	private AbstractCred cachedCredential = null;
+	private Map<String, AbstractCred> cachedGroupCredentials = Maps.newHashMap();
+
+
 	public GridSessionCred(SessionClient client) {
 
+		tempFile.deleteOnExit();
+		
 		if (client == null) {
 			throw new RuntimeException("Client can't be null");
 		}
@@ -145,6 +163,48 @@ public class GridSessionCred implements Cred {
 	@Override
 	public void uploadMyProxy() {
 		session.getSession().upload();
+	}
+	
+	private synchronized AbstractCred getCachedCredential() {
+		if ( cachedCredential == null ) {
+			session.getSession().save_proxy(tempFilePath);
+			cachedCredential = new ProxyCred(tempFilePath);
+		}
+		return cachedCredential;
+	}
+	
+	private synchronized AbstractCred getCachedGroupCredential(String fqan) {
+		if ( cachedGroupCredentials.get(fqan)  == null) {
+			String fqanNormailzed = fqan.replace('/', '_');
+			String path = tempFilePath+"_"+fqanNormailzed;
+			new File(path).deleteOnExit();
+			session.getSession().save_group_proxy(fqan, path);
+			ProxyCred c = new ProxyCred(path);
+			cachedGroupCredentials.put(fqan, c);
+		}
+		return cachedGroupCredentials.get(fqan);
+	}
+
+	@Override
+	public GSSCredential getGSSCredential() {
+
+		return getCachedCredential().getGSSCredential();
+	}
+
+	@Override
+	public String getFqan() {
+		// a session credential is always non-vomsified
+		return Constants.NON_VO_FQAN;
+	}
+
+	@Override
+	public Cred getGroupCredential(String fqan) {
+		return getCachedGroupCredential(fqan);
+	}
+
+	@Override
+	public Map<String, VO> getAvailableFqans() {
+		return getCachedCredential().getAvailableFqans();
 	}
 
 }

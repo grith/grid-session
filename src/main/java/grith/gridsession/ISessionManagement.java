@@ -54,6 +54,8 @@ public interface ISessionManagement {
 	public String save_proxy();
 
 	public String save_proxy(String path);
+	
+	public String save_group_proxy(String group, String path);
 
 	public abstract boolean set_min_lifetime(Integer lt);
 
