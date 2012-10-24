@@ -377,8 +377,8 @@ public class SessionClient {
 
 	protected void startDaemon(Daemon d) {
 
-		String memMin = "-Xms24m";
-		String memMax = "-Xmx24m";
+		String memMin = "-Xms32m";
+		String memMax = "-Xmx32m";
 
 		JavaVMArguments args;
 		try {
