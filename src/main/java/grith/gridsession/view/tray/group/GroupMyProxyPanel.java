@@ -157,7 +157,6 @@ public class GroupMyProxyPanel extends JPanel implements PropertyChangeListener 
 						String group = (String) e.getItem();
 						if (StringUtils.isNotBlank(group)
 								&& group.startsWith("/")) {
-							System.out.println("EVENT: " + group);
 							setGroup(group);
 						}
 					}
@@ -286,7 +285,6 @@ public class GroupMyProxyPanel extends JPanel implements PropertyChangeListener 
 
 						boolean isUploaded = controller.getSessionManagement().is_uploaded(
 								group);
-						System.out.println("ISUPLOADED: " + isUploaded);
 						if (isUploaded) {
 							String un = controller.getSessionManagement().myproxy_username(
 									group);
