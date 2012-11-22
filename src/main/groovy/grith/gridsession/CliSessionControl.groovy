@@ -7,10 +7,14 @@ import grisu.jcommons.utils.EnvironmentVariableHelpers
 import grisu.jcommons.view.cli.CliHelpers
 import grith.jgrith.cred.AbstractCred
 import grith.jgrith.utils.CliLogin
-import groovy.util.logging.Slf4j
 
-@Slf4j
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+
 class CliSessionControl extends SessionClient {
+	
+	static final Logger log = LoggerFactory.getLogger(CliSessionControl.class);
 
 	public static void main(String[] args) throws Exception {
 

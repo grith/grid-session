@@ -4,6 +4,7 @@ import grisu.jcommons.configuration.CommonGridProperties;
 import grith.jgrith.cred.AbstractCred;
 import grith.jgrith.cred.Cred;
 import grith.jgrith.cred.GridLoginParameters;
+import grith.jgrith.cred.MyProxyCred;
 import grith.jgrith.cred.ProxyCred;
 import grith.jgrith.cred.callbacks.CliCallback;
 
@@ -30,6 +31,13 @@ public class GridClient extends SessionClient {
 	public GridClient(GridLoginParameters loginParams) throws Exception {
 		super(loginParams.isLogout(), loginParams.isStartGridSessionDeamon());
 		this.loginParams = loginParams;
+	}
+	
+	@Override
+	protected void logout() {
+		
+		getCredential().destroy();
+		
 	}
 
 	/**
@@ -69,9 +77,14 @@ public class GridClient extends SessionClient {
 			} else {
 
 				try {
+					cred = MyProxyCred.loadFromDefault();
+				} catch (Exception e1){
+					myLogger.debug("No valid myproxy credential found. Trying normal proxy...");
+				try {
 					cred = new ProxyCred();
 				} catch (Exception e) {
 					myLogger.debug("Can't find valid credential, creating new one...");
+				}
 				}
 
 				if ((cred == null) || !cred.isValid()) {

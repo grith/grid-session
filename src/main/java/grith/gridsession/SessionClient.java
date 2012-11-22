@@ -246,6 +246,10 @@ public class SessionClient {
 	public void setUseSSL(boolean useSSL) {
 		this.useSSL = useSSL;
 	}
+	
+	protected void logout() {
+		// can be overwritten
+	}
 
 	protected synchronized void startClient(boolean gridSessionServerRunning)
 			throws Exception {
@@ -255,6 +259,7 @@ public class SessionClient {
 		if (!gridSessionServerRunning) {
 			if (logout) {
 				myLogger.debug("Logging out from non-grid-session client...");
+				logout();
 				System.exit(0);
 			}
 			myLogger.debug("Starting non-RPC grid session...");
