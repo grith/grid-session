@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.globus.common.CoGProperties;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
@@ -175,6 +176,11 @@ public class GridSessionCred implements Cred {
 	}
 	
 	private synchronized AbstractCred getCachedGroupCredential(String fqan) {
+		
+		if (StringUtils.isBlank(fqan) || Constants.NON_VO_FQAN.equals(fqan) ) {
+			return this.getCachedCredential();
+		}
+		
 		if ( cachedGroupCredentials.get(fqan)  == null) {
 			String fqanNormailzed = fqan.replace('/', '_');
 			String path = tempFilePath+"_"+fqanNormailzed;
