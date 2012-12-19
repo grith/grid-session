@@ -5,6 +5,11 @@ import grisu.jcommons.constants.Enums.LoginType;
 import grith.jgrith.control.SlcsLoginWrapper;
 import grith.jgrith.cred.AbstractCred.PROPERTY;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -30,6 +36,9 @@ public class SLCSCredPanel extends CredPanel {
 
 	static final Logger myLogger = LoggerFactory.getLogger(SLCSCredPanel.class
 			.getName());
+	
+	private final static String LOADING_STRING = "Loading list of institutions...";
+	private final static String ERROR_LOADING_STRING = "Error loading idps: ";
 
 	{
 		final Thread t = new Thread() {
@@ -53,7 +62,31 @@ public class SLCSCredPanel extends CredPanel {
 	private JTextField unField;
 	private JPanel panel_2;
 	private JPasswordField passwordField;
+	
+	private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+	
+	private boolean idpsLoaded = false;
 
+
+	public boolean isIdpsLoaded() {
+		return idpsLoaded;
+	}
+
+	public void setIdpsLoaded(boolean idpsLoaded) {
+		this.idpsLoaded = idpsLoaded;
+	}
+	
+	public SLCSCredPanel(PropertyChangeListener l) {
+		this(ImmutableSet.of(l));
+	}
+
+	public SLCSCredPanel(Collection<PropertyChangeListener> listeners) {
+		this();
+		for ( PropertyChangeListener l : listeners ) {
+			pcs.addPropertyChangeListener(l);
+		}
+	}
+	
 	/**
 	 * Create the panel.
 	 */
@@ -89,15 +122,54 @@ public class SLCSCredPanel extends CredPanel {
 	private JComboBox getComboBox() {
 		if (comboBox == null) {
 			comboBox = new JComboBox(idpModel);
+			comboBox.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent arg0) {
+					
+					if ( arg0.getStateChange() == ItemEvent.SELECTED ) {
+						
+						System.out.println("selected");
+						String item = (String)comboBox.getSelectedItem();
+						System.out.println("item: "+item);
+						if ( LOADING_STRING.equals(item) || item.startsWith(ERROR_LOADING_STRING) ) {
+							idpsLoaded = false;
+							pcs.firePropertyChange("idpsLoaded", false, false);
+							System.out.println("loading string");
+							return;
+						}
+						if ( ! isIdpsLoaded() ) {
+							System.out.println("not loaded");
+							return;
+						}
+												
+						System.out.println("loaded, item fired");
+						pcs.firePropertyChange("idpsLoaded", false, true);
+						pcs.firePropertyChange("idp", null, item);
+						
+					}
+					
+				}
+			});
 			final String lastIdp = CommonGridProperties.getDefault()
 					.getLastShibIdp();
 			if (StringUtils.isNotBlank(lastIdp)) {
-				idpModel.addElement(lastIdp);
+				SwingUtilities.invokeLater(new Thread() {
+					public void run() {
+						idpModel.addElement(lastIdp);
+						idpModel.addElement(LOADING_STRING);
+						idpModel.setSelectedItem(lastIdp);
+						idpsLoaded = true;
+						comboBox.setEnabled(true);
+						pcs.firePropertyChange("idpsLoaded", false, idpsLoaded);
+					}
+				}
+				
+				);
 			} else {
 				// SwingUtilities.invokeLater(new Thread() {
 				// @Override
 				// public void run() {
-				idpModel.addElement("Loading list of institutions...");
+				idpModel.addElement(LOADING_STRING);
+				comboBox.setEnabled(false);
 				// comboBox.setEnabled(false);
 				// }
 				// });
@@ -190,12 +262,24 @@ public class SLCSCredPanel extends CredPanel {
 
 			@Override
 			public void run() {
+				
+				boolean temp = idpsLoaded;
+				idpsLoaded= false;
+				
+				pcs.firePropertyChange("idpsLoaded", temp, idpsLoaded);
+				getComboBox().setEnabled(false);
 
 				List<String> allIdps = null;
 				try {
 					allIdps = SlcsLoginWrapper.getAllIdps();
-				} catch (Throwable e) {
-					e.printStackTrace();
+				} catch (final Throwable e) {
+					SwingUtilities.invokeLater(new Thread() {
+						public void run(){
+							idpModel.removeAllElements();
+							idpModel.addElement(ERROR_LOADING_STRING+e.getLocalizedMessage());
+						}
+					});
+					myLogger.debug("Error loading idps.", e);
 					return;
 				}
 
@@ -226,6 +310,10 @@ public class SLCSCredPanel extends CredPanel {
 
 
 						getComboBox().setEnabled(true);
+						
+						idpsLoaded = true;
+						pcs.firePropertyChange("idpsLoaded", false, idpsLoaded);
+						pcs.firePropertyChange("idp", null, getIdp());
 					}
 
 				});
@@ -236,6 +324,10 @@ public class SLCSCredPanel extends CredPanel {
 
 		loadThread.start();
 
+	}
+	
+	public String getIdp() {
+		return (String)getComboBox().getSelectedItem();
 	}
 
 	@Override
