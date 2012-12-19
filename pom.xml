@@ -8,7 +8,7 @@
 
 
 	<artifactId>grid-session</artifactId>
-	<version>0.1.9-SNAPSHOT</version>
+	<version>0.1.9</version>
 	<name>Grid session client</name>
 	<description>A client which runs as a daemon and takes care of grid proxy logins and which can also auto-update credentials if that is supported by the type of authentication.</description>
 
@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>grith</groupId>
 			<artifactId>jgrith</artifactId>
-			<version>0.9-SNAPSHOT</version>
+			<version>0.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
