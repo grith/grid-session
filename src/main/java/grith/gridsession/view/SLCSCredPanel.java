@@ -127,21 +127,21 @@ public class SLCSCredPanel extends CredPanel {
 					
 					if ( arg0.getStateChange() == ItemEvent.SELECTED ) {
 						
-						System.out.println("selected");
+						//System.out.println("selected");
 						String item = (String)comboBox.getSelectedItem();
-						System.out.println("item: "+item);
+						//System.out.println("item: "+item);
 						if ( LOADING_STRING.equals(item) || item.startsWith(ERROR_LOADING_STRING) ) {
 							idpsLoaded = false;
 							pcs.firePropertyChange("idpsLoaded", false, false);
-							System.out.println("loading string");
+							//System.out.println("loading string");
 							return;
 						}
 						if ( ! isIdpsLoaded() ) {
-							System.out.println("not loaded");
+							//System.out.println("not loaded");
 							return;
 						}
 												
-						System.out.println("loaded, item fired");
+						//System.out.println("loaded, item fired");
 						pcs.firePropertyChange("idpsLoaded", false, true);
 						pcs.firePropertyChange("idp", null, item);
 						
@@ -264,10 +264,13 @@ public class SLCSCredPanel extends CredPanel {
 			public void run() {
 				
 				boolean temp = idpsLoaded;
-				idpsLoaded= false;
-				
-				pcs.firePropertyChange("idpsLoaded", temp, idpsLoaded);
-				getComboBox().setEnabled(false);
+				if ( ! idpsLoaded ) {
+					getComboBox().setEnabled(false);
+					idpsLoaded= false;
+					
+					pcs.firePropertyChange("idpsLoaded", temp, idpsLoaded);
+				}
+
 
 				List<String> allIdps = null;
 				try {

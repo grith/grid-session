@@ -72,7 +72,8 @@ public class GridSessionCred implements Cred {
 
 	@Override
 	public void destroy() {
-		session.getSession().stop();
+//		session.getSession().stop();
+		session.getSession().destroy();
 	}
 
 	@Override
