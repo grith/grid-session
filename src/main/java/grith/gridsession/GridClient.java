@@ -17,8 +17,6 @@ public class GridClient extends SessionClient {
 	public static final Logger myLogger = LoggerFactory
 			.getLogger(GridClient.class);
 
-
-
 	private final GridLoginParameters loginParams;
 
 	private Cred cred = null;
@@ -32,12 +30,12 @@ public class GridClient extends SessionClient {
 		super(loginParams.isLogout(), loginParams.isStartGridSessionDeamon());
 		this.loginParams = loginParams;
 	}
-	
+
 	@Override
 	protected void logout() {
-		
+
 		getCredential().destroy();
-		
+
 	}
 
 	/**
@@ -51,12 +49,13 @@ public class GridClient extends SessionClient {
 	}
 
 	public Cred getCredential() {
+		boolean force = getLoginParameters().isForceAuthenticate();
 		if ((cred == null) || getLoginParameters().isNologin()) {
 
-			if (CommonGridProperties.getDefault().startGridSessionThreadOrDaemon()) {
+			if (CommonGridProperties.getDefault()
+					.startGridSessionThreadOrDaemon()) {
 
 				cred = new GridSessionCred(this);
-				boolean force = getLoginParameters().isForceAuthenticate();
 
 				String mpHost = getLoginParameters().getMyProxyHost();
 				if (StringUtils.isNotBlank(mpHost)) {
@@ -76,15 +75,17 @@ public class GridClient extends SessionClient {
 				}
 			} else {
 
-				try {
-					cred = MyProxyCred.loadFromDefault();
-				} catch (Exception e1){
-					myLogger.debug("No valid myproxy credential found. Trying normal proxy...");
-				try {
-					cred = new ProxyCred();
-				} catch (Exception e) {
-					myLogger.debug("Can't find valid credential, creating new one...");
-				}
+				if (!force) {
+					try {
+						cred = MyProxyCred.loadFromDefault();
+					} catch (Exception e1) {
+						myLogger.debug("No valid myproxy credential found. Trying normal proxy...");
+						try {
+							cred = new ProxyCred();
+						} catch (Exception e) {
+							myLogger.debug("Can't find valid credential, creating new one...");
+						}
+					}
 				}
 
 				if ((cred == null) || !cred.isValid()) {
@@ -102,11 +103,9 @@ public class GridClient extends SessionClient {
 		return cred;
 	}
 
-
 	public GridLoginParameters getLoginParameters() {
 
 		return loginParams;
 	}
 
-	
 }

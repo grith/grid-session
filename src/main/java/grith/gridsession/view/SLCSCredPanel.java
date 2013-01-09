@@ -37,8 +37,8 @@ public class SLCSCredPanel extends CredPanel {
 	static final Logger myLogger = LoggerFactory.getLogger(SLCSCredPanel.class
 			.getName());
 	
-	private final static String LOADING_STRING = "Loading list of institutions...";
-	private final static String ERROR_LOADING_STRING = "Error loading idps: ";
+	public final static String LOADING_STRING = "Loading list of institutions...";
+	public final static String ERROR_LOADING_STRING = "Error loading idps: ";
 
 	{
 		final Thread t = new Thread() {
