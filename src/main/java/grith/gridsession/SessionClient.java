@@ -143,7 +143,7 @@ public class SessionClient {
 							GridSessionDaemon daemon = new GridSessionDaemon();
 
 						} catch (Exception e2) {
-							e2.printStackTrace();
+							myLogger.error("Error starting daemon", e2);
 						}
 					}
 				}
@@ -154,7 +154,7 @@ public class SessionClient {
 					GridSessionDaemon daemon = new GridSessionDaemon();
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					myLogger.error("Error starting session service.", e);
 				}
 			}
 
@@ -173,6 +173,7 @@ public class SessionClient {
 						.startGridSessionThreadOrDaemon());
 			}
 		} catch (Exception e) {
+			myLogger.debug("Error starting client.",e);
 			throw new RuntimeException(e);
 		}
 
@@ -343,7 +344,6 @@ public class SessionClient {
 					break;
 
 				} catch (UndeclaredThrowableException e) {
-					// e.printStackTrace();
 					myLogger.debug("Could not execute command, trying again.",
 							e);
 					try {
@@ -389,7 +389,7 @@ public class SessionClient {
 		try {
 			args = JavaVMArguments.current();
 		} catch (IOException e) {
-			e.printStackTrace();
+			myLogger.debug("Error starting client.", e);
 			throw new RuntimeException(e);
 		}
 		boolean jar = false;

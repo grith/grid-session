@@ -49,9 +49,15 @@ public class GridClient extends SessionClient {
 	}
 
 	public Cred getCredential() {
-		boolean force = getLoginParameters().isForceAuthenticate();
+		
+		
 		if ((cred == null) || getLoginParameters().isNologin()) {
 
+			boolean force = false;
+			if ( getLoginParameters() != null ) {
+				force = getLoginParameters().isForceAuthenticate();
+			}
+			
 			if (CommonGridProperties.getDefault()
 					.startGridSessionThreadOrDaemon()) {
 
