@@ -25,6 +25,11 @@ public class GridClient extends SessionClient {
 		this(new GridLoginParameters());
 
 	}
+	
+	public GridClient(boolean logout, boolean startSession) throws Exception {
+		super(logout, startSession);
+		this.loginParams = new GridLoginParameters();
+	}
 
 	public GridClient(GridLoginParameters loginParams) throws Exception {
 		super(loginParams.isLogout(), loginParams.isStartGridSessionDeamon());

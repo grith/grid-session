@@ -4,6 +4,8 @@ import grisu.jcommons.utils.WalltimeUtils;
 import grith.jgrith.cred.AbstractCred.PROPERTY;
 import grith.jgrith.cred.Cred;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -18,7 +20,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class GridSessionCredPanel extends CredPanel {
+public class GridSessionCredPanel extends CredPanel implements PropertyChangeListener {
 
 	private static String generateHtml(Map<String, String> sessionProps) {
 
@@ -167,5 +169,17 @@ public class GridSessionCredPanel extends CredPanel {
 		} else {
 			return true;
 		}
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+
+		if ( "credential".equals(evt.getPropertyName()) ) {
+			
+			Cred cred = (Cred) evt.getNewValue();
+			setCred(cred);
+			
+		}
+		
 	}
 }

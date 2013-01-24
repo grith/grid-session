@@ -156,6 +156,8 @@ public class CredCreationPanel extends JPanel {
 	private GridSessionCredPanel getGridSessionCredPanel() {
 		if (gridSessionCredPanel == null) {
 			gridSessionCredPanel = new GridSessionCredPanel();
+			addPropertyChangeListener(gridSessionCredPanel);
+			
 		}
 		return gridSessionCredPanel;
 	}

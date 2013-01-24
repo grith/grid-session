@@ -525,6 +525,7 @@ PropertyChangeListener {
 			PROPERTY p = PROPERTY.valueOf((String) key);
 			newMap.put(p, config.get(key));
 		}
+		
 
 		AbstractCred currentCredential = AbstractCred.loadFromConfig(newMap);
 

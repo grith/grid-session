@@ -28,8 +28,7 @@ public class GridSessionController {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			getLoginDialog().setVisible(true);
-			refreshStatus();
+			showLoginDialog(true);
 		}
 
 	}
@@ -197,6 +196,16 @@ public class GridSessionController {
 	public void showGroupMyProxyDialog(String group) {
 		myDialog.setGroup(group);
 		myDialog.setVisible(true);
+	}
+
+	public void showLoginDialog(boolean b) {
+
+		getLoginDialog().setVisible(b);
+
+		if ( b ) {
+			refreshStatus();
+		}
+
 	}
 
 }

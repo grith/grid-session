@@ -17,7 +17,13 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GridLoginDialog extends JDialog implements PropertyChangeListener {
+	
+	public static final Logger myLogger = LoggerFactory
+			.getLogger(GridLoginDialog.class);
 
 	private class GetCredAction extends AbstractAction {
 		public GetCredAction() {
@@ -108,7 +114,7 @@ public class GridLoginDialog extends JDialog implements PropertyChangeListener {
 		}
 
 		if ("credential".equals(evt.getPropertyName())) {
-			System.out.println("NEW CREDENTIAL CREATED: "
+			myLogger.debug("NEW CREDENTIAL CREATED: "
 					+ credCreationPanel.getCredential().getDN());
 			dispose();
 		}
