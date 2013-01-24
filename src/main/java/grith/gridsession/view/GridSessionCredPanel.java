@@ -21,6 +21,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class GridSessionCredPanel extends CredPanel implements PropertyChangeListener {
+	
+	public static final int UPDATE_WAIT_TIME_SECONDS = 60;
 
 	private static String generateHtml(Map<String, String> sessionProps) {
 
@@ -50,6 +52,8 @@ public class GridSessionCredPanel extends CredPanel implements PropertyChangeLis
 	private JEditorPane propertiesPane;
 
 	private Cred cred = null;
+	
+	private Thread updateCredPropertiesThread = null;
 
 	/**
 	 * Create the panel.
@@ -124,9 +128,29 @@ public class GridSessionCredPanel extends CredPanel implements PropertyChangeLis
 		panel.setBorder(new TitledBorder(null, title, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 	}
 
-	public void setCred(Cred cred) {
+	public synchronized void setCred(Cred cred) {
 		this.cred = cred;
 		setProperties();
+		
+		if ( updateCredPropertiesThread == null || ! updateCredPropertiesThread.isAlive() ) {
+			updateCredPropertiesThread = new Thread() {
+				public void run() {
+					while (GridSessionCredPanel.this.cred != null) {
+					try {
+						Thread.sleep(UPDATE_WAIT_TIME_SECONDS * 1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						return;
+					}
+					
+					setProperties();
+					}
+				}
+			};
+			updateCredPropertiesThread.start();
+			
+		}
+		
 	}
 
 	private void setProperties() {
@@ -142,9 +166,9 @@ public class GridSessionCredPanel extends CredPanel implements PropertyChangeLis
 			props.put("", "");
 
 			props.put("Identity", cred.getDN());
-			String lifetime = WalltimeUtils.convertSeconds(cred
-					.getRemainingLifetime());
-			props.put("Remaining lifetime", lifetime);
+			int lt = cred.getRemainingLifetime();
+			String lifetime = WalltimeUtils.convertSeconds(lt);
+			props.put("Remaining lifetime", lifetime + " ( "+lt+" seconds )");
 
 			boolean autorenews = cred.isRenewable();
 			if (autorenews) {
@@ -153,6 +177,7 @@ public class GridSessionCredPanel extends CredPanel implements PropertyChangeLis
 				props.put("Auto-refresh",
 						"no (to enable, re-login via one of the other methods)");
 			}
+
 			// props.put("Login type", cred.g)
 			propText = generateHtml(props);
 		}

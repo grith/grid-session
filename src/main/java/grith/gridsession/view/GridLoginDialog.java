@@ -2,6 +2,7 @@ package grith.gridsession.view;
 
 import grith.gridsession.GridClient;
 import grith.gridsession.SessionClient;
+import grith.jgrith.cred.Cred;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -116,7 +117,23 @@ public class GridLoginDialog extends JDialog implements PropertyChangeListener {
 		if ("credential".equals(evt.getPropertyName())) {
 			myLogger.debug("NEW CREDENTIAL CREATED: "
 					+ credCreationPanel.getCredential().getDN());
+//			final Cred c = (Cred)evt.getNewValue();
+//			c.setMinimumLifetime(863300);
 			dispose();
+//			new Thread(){
+//				public void run() {
+//					while (true){
+//					try {
+//						Thread.sleep(1000);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//					System.out.println(c.getRemainingLifetime());
+//					myLogger.debug("Remain: "+c.getRemainingLifetime());
+//					}
+//				}
+//			}.start();
 		}
 	}
 
