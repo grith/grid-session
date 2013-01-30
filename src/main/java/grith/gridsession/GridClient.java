@@ -39,7 +39,10 @@ public class GridClient extends SessionClient {
 	@Override
 	protected void logout() {
 
-		getCredential().destroy();
+		Cred c = getCredential();
+		if ( c != null ) {
+			c.destroy();
+		}
 
 	}
 
