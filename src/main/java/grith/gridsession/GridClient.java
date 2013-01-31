@@ -102,7 +102,7 @@ public class GridClient extends SessionClient {
 					}
 				}
 
-				if ((cred == null) || !cred.isValid()) {
+				if (getLoginParameters()!= null && ((cred == null) || !cred.isValid())) {
 
 					if (!getLoginParameters().validConfig()) {
 						myLogger.debug("Trying to retieve remaining login details.");
