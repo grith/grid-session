@@ -52,10 +52,16 @@ public class GridSessionCred implements Cred {
 	
 	private AbstractCred cachedCredential = null;
 	private Map<String, AbstractCred> cachedGroupCredentials = Maps.newHashMap();
-
+	
+	// not used
+	private boolean saveProxyOnCreation = true;
 
 	public GridSessionCred(SessionClient client) {
-
+		this(client, true);
+	}
+	
+	public GridSessionCred(SessionClient client, boolean saveProxyOnCreation) {
+		this.saveProxyOnCreation = saveProxyOnCreation;
 		tempFile.deleteOnExit();
 		
 		if (client == null) {
@@ -63,6 +69,7 @@ public class GridSessionCred implements Cred {
 		}
 
 		this.session = client;
+
 	}
 
 	public GridSessionCred(SessionClient client, Map<PROPERTY, Object> params) {
@@ -213,6 +220,16 @@ public class GridSessionCred implements Cred {
 	@Override
 	public Map<String, VO> getAvailableFqans() {
 		return getCachedCredential().getAvailableFqans();
+	}
+
+	@Override
+	public void setSaveProxyOnCreation(boolean save) {
+		this.saveProxyOnCreation = save;
+	}
+
+	@Override
+	public boolean getSaveProxyOnCreation() {
+		return this.saveProxyOnCreation;
 	}
 
 }
