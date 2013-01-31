@@ -391,7 +391,7 @@ PropertyChangeListener {
 
 		myLogger.debug("Saving credential to "+path);
 		AbstractCred c = getCredential();
-		if (c == null) {
+		if (c == null || c.getGSSCredential() == null) {
 			return "";
 		}
 
@@ -408,7 +408,7 @@ PropertyChangeListener {
 
 		myLogger.debug("Saving group credential for group {} to {}", fqan, path);
 		AbstractCred c = getCredential().getGroupCredential(fqan);
-		if (c == null) {
+		if (c == null || c.getGSSCredential() == null ) {
 			return "";
 		}
 
