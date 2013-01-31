@@ -20,7 +20,7 @@ public class GridClient extends SessionClient {
 	private final GridLoginParameters loginParams;
 
 	private Cred cred = null;
-
+	
 	public GridClient() throws Exception {
 		this(new GridLoginParameters());
 
@@ -38,7 +38,7 @@ public class GridClient extends SessionClient {
 
 	@Override
 	protected void logout() {
-
+		
 		Cred c = getCredential();
 		if ( c != null ) {
 			c.destroy();
