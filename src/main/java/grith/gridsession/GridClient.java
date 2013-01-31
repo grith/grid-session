@@ -70,6 +70,9 @@ public class GridClient extends SessionClient {
 					.startGridSessionThreadOrDaemon()) {
 
 				cred = new GridSessionCred(this);
+				if ( logout ) {
+					cred.setSaveProxyOnCreation(false);
+				}
 
 				String mpHost = getLoginParameters().getMyProxyHost();
 				if (StringUtils.isNotBlank(mpHost)) {
@@ -92,6 +95,9 @@ public class GridClient extends SessionClient {
 				if (!force) {
 					try {
 						cred = MyProxyCred.loadFromDefault();
+						if ( logout ) {
+							cred.setSaveProxyOnCreation(false);
+						}
 					} catch (Exception e1) {
 						myLogger.debug("No valid myproxy credential found. Trying normal proxy...");
 						try {
@@ -111,6 +117,9 @@ public class GridClient extends SessionClient {
 					}
 					cred = AbstractCred.loadFromConfig(getLoginParameters()
 							.getCredProperties());
+					if ( logout ) {
+						cred.setSaveProxyOnCreation(false);
+					}
 				}
 			}
 		}

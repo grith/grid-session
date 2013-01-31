@@ -50,7 +50,7 @@ public class SessionClient {
 
 	private boolean useLocalTransport = false;
 
-	private final boolean logout;
+	protected final boolean logout;
 
 
 	private boolean clientStarted = false;
