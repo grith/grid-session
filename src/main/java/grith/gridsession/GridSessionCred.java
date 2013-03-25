@@ -232,4 +232,9 @@ public class GridSessionCred implements Cred {
 		return this.saveProxyOnCreation;
 	}
 
+	@Override
+	public String getProxyPath() {
+		return getCachedCredential().getProxyPath();
+	}
+
 }
