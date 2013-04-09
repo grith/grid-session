@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class SLCSCredPanel extends CredPanel {
@@ -92,14 +92,14 @@ public class SLCSCredPanel extends CredPanel {
 	 */
 	public SLCSCredPanel() {
 		setLayout(new FormLayout(new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("max(35dlu;min)"),
-				FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC, }));
+				FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC, }));
 		add(getPanel(), "2, 2, fill, fill");
 		add(getPanel_1(), "2, 4, fill, fill");
 		add(getPanel_2(), "2, 6, fill, fill");
@@ -189,12 +189,12 @@ public class SLCSCredPanel extends CredPanel {
 			panel.setBorder(new TitledBorder(null, "Institution",
 					TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panel.setLayout(new FormLayout(new ColumnSpec[] {
-					FormFactory.RELATED_GAP_COLSPEC,
+					FormSpecs.RELATED_GAP_COLSPEC,
 					ColumnSpec.decode("default:grow"),
-					FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC, }));
+					FormSpecs.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+					FormSpecs.RELATED_GAP_ROWSPEC,
+					FormSpecs.DEFAULT_ROWSPEC,
+					FormSpecs.RELATED_GAP_ROWSPEC, }));
 			panel.add(getComboBox(), "2, 2, fill, default");
 		}
 		return panel;
@@ -205,13 +205,13 @@ public class SLCSCredPanel extends CredPanel {
 			panel_1 = new JPanel();
 			panel_1.setBorder(new TitledBorder(null, "Institution username", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panel_1.setLayout(new FormLayout(new ColumnSpec[] {
-					FormFactory.RELATED_GAP_COLSPEC,
+					FormSpecs.RELATED_GAP_COLSPEC,
 					ColumnSpec.decode("default:grow"),
-					FormFactory.RELATED_GAP_COLSPEC,},
+					FormSpecs.RELATED_GAP_COLSPEC,},
 					new RowSpec[] {
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC,}));
+					FormSpecs.RELATED_GAP_ROWSPEC,
+					FormSpecs.DEFAULT_ROWSPEC,
+					FormSpecs.RELATED_GAP_ROWSPEC,}));
 			panel_1.add(getUnField(), "2, 2, fill, default");
 		}
 		return panel_1;
@@ -222,13 +222,13 @@ public class SLCSCredPanel extends CredPanel {
 			panel_2 = new JPanel();
 			panel_2.setBorder(new TitledBorder(null, "Institution password", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panel_2.setLayout(new FormLayout(new ColumnSpec[] {
-					FormFactory.RELATED_GAP_COLSPEC,
+					FormSpecs.RELATED_GAP_COLSPEC,
 					ColumnSpec.decode("default:grow"),
-					FormFactory.RELATED_GAP_COLSPEC,},
+					FormSpecs.RELATED_GAP_COLSPEC,},
 					new RowSpec[] {
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC,}));
+					FormSpecs.RELATED_GAP_ROWSPEC,
+					FormSpecs.DEFAULT_ROWSPEC,
+					FormSpecs.RELATED_GAP_ROWSPEC,}));
 			panel_2.add(getPasswordField(), "2, 2, fill, default");
 		}
 		return panel_2;

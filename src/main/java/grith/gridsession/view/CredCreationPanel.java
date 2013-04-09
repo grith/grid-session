@@ -20,9 +20,9 @@ import org.jdesktop.swingx.error.ErrorInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class CredCreationPanel extends JPanel {
@@ -60,9 +60,9 @@ public class CredCreationPanel extends JPanel {
 		}
 		setLayout(new FormLayout(
 				new ColumnSpec[] { ColumnSpec.decode("166px:grow"), },
-				new RowSpec[] { FormFactory.LINE_GAP_ROWSPEC,
-						FormFactory.MIN_ROWSPEC,
-						FormFactory.RELATED_GAP_ROWSPEC, }));
+				new RowSpec[] { FormSpecs.LINE_GAP_ROWSPEC,
+						FormSpecs.MIN_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, }));
 		add(getTabbedPane(), "1, 2, fill, fill");
 
 	}
