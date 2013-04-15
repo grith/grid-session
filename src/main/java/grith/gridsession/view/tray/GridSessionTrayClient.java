@@ -36,8 +36,8 @@ PropertyChangeListener {
 
 		Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler());
 
-		Collection<String> vos = Sets.newHashSet("nz");
-		VomsesFiles.copyVomses(vos);
+//		Collection<String> vos = Sets.newHashSet("nz");
+//		VomsesFiles.copyVomses(vos);
 		CertificateFiles.copyCACerts(false);
 
 		myLogger.debug("Setting look and feel.");

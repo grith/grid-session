@@ -7,6 +7,7 @@ import grith.jgrith.cred.AbstractCred;
 import grith.jgrith.cred.AbstractCred.PROPERTY;
 import grith.jgrith.cred.Cred;
 import grith.jgrith.cred.ProxyCred;
+import grith.jgrith.voms.VOManagement.VOManager;
 
 import java.io.File;
 import java.util.Map;
@@ -123,7 +124,6 @@ public class GridSessionCred implements Cred {
 		}
 
 		session.getSession().start(configTemp);
-
 	}
 
 	@Override
@@ -235,6 +235,11 @@ public class GridSessionCred implements Cred {
 	@Override
 	public String getProxyPath() {
 		return getCachedCredential().getProxyPath();
+	}
+
+	@Override
+	public VOManager getVOManager() {
+		return getCachedCredential().getVOManager();
 	}
 
 }

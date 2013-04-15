@@ -78,7 +78,7 @@ public class SessionClient {
 		EnvironmentVariableHelpers.loadEnvironmentVariablesToSystemProperties();
 
 		CertificateFiles.copyCACerts(false);
-		VomsesFiles.copyVomses(VomsesFiles.DEFAULT_VOS);
+//		VomsesFiles.copyVomses(VomsesFiles.DEFAULT_VOS);
 		BouncyCastleTool.initBouncyCastle();
 
 		if (useSSL) {
