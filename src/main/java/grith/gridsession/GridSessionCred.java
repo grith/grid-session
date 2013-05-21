@@ -1,11 +1,21 @@
 package grith.gridsession;
 
+import grisu.jcommons.constants.Constants;
 import grisu.jcommons.exceptions.CredentialException;
+import grisu.model.info.dto.VO;
+import grith.jgrith.cred.AbstractCred;
+import grith.jgrith.cred.AbstractCred.PROPERTY;
 import grith.jgrith.cred.Cred;
-import grith.jgrith.credential.Credential.PROPERTY;
+import grith.jgrith.cred.ProxyCred;
+import grith.jgrith.voms.VOManagement.VOManager;
 
+import java.io.File;
 import java.util.Map;
+import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
+import org.globus.common.CoGProperties;
+import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +47,30 @@ public class GridSessionCred implements Cred {
 
 	private final SessionClient session;
 
-	public GridSessionCred(SessionClient client) {
+	private final String tempFilePath = CoGProperties.getDefault().getProxyFile()+"_temp_"+UUID.randomUUID().toString();
 
+	private final File tempFile = new File(tempFilePath);
+	
+	private AbstractCred cachedCredential = null;
+	private Map<String, AbstractCred> cachedGroupCredentials = Maps.newHashMap();
+	
+	// not used
+	private boolean saveProxyOnCreation = true;
+
+	public GridSessionCred(SessionClient client) {
+		this(client, true);
+	}
+	
+	public GridSessionCred(SessionClient client, boolean saveProxyOnCreation) {
+		this.saveProxyOnCreation = saveProxyOnCreation;
+		tempFile.deleteOnExit();
+		
 		if (client == null) {
 			throw new RuntimeException("Client can't be null");
 		}
 
 		this.session = client;
+
 	}
 
 	public GridSessionCred(SessionClient client, Map<PROPERTY, Object> params) {
@@ -53,7 +80,8 @@ public class GridSessionCred implements Cred {
 
 	@Override
 	public void destroy() {
-		session.getSession().stop();
+//		session.getSession().stop();
+		session.getSession().destroy();
 	}
 
 	@Override
@@ -96,7 +124,6 @@ public class GridSessionCred implements Cred {
 		}
 
 		session.getSession().start(configTemp);
-
 	}
 
 	@Override
@@ -145,6 +172,74 @@ public class GridSessionCred implements Cred {
 	@Override
 	public void uploadMyProxy() {
 		session.getSession().upload();
+	}
+	
+	private synchronized AbstractCred getCachedCredential() {
+		if ( cachedCredential == null ) {
+			// might be that it's already a proxycred, then it doesn't get saved again.ls -l
+			String temp = session.getSession().save_proxy(tempFilePath);
+			cachedCredential = new ProxyCred(temp);
+		}
+		return cachedCredential;
+	}
+	
+	private synchronized AbstractCred getCachedGroupCredential(String fqan) {
+		
+		if (StringUtils.isBlank(fqan) || Constants.NON_VO_FQAN.equals(fqan) ) {
+			return this.getCachedCredential();
+		}
+		
+		if ( cachedGroupCredentials.get(fqan)  == null) {
+			String fqanNormailzed = fqan.replace('/', '_');
+			String path = tempFilePath+"_"+fqanNormailzed;
+			new File(path).deleteOnExit();
+			session.getSession().save_group_proxy(fqan, path);
+			ProxyCred c = new ProxyCred(path);
+			cachedGroupCredentials.put(fqan, c);
+		}
+		return cachedGroupCredentials.get(fqan);
+	}
+
+	@Override
+	public GSSCredential getGSSCredential() {
+
+		return getCachedCredential().getGSSCredential();
+	}
+
+	@Override
+	public String getFqan() {
+		// a session credential is always non-vomsified
+		return Constants.NON_VO_FQAN;
+	}
+
+	@Override
+	public Cred getGroupCredential(String fqan) {
+		return getCachedGroupCredential(fqan);
+	}
+
+	@Override
+	public Map<String, VO> getAvailableFqans() {
+		return getCachedCredential().getAvailableFqans();
+	}
+
+	@Override
+	public void setSaveProxyOnCreation(boolean save) {
+		this.saveProxyOnCreation = save;
+	}
+
+	@Override
+	public boolean getSaveProxyOnCreation() {
+		return this.saveProxyOnCreation;
+	}
+
+	@Override
+	public String getProxyPath() {
+		return getCachedCredential().getProxyPath();
+	}
+
+	@Override
+	public VOManager getVOManager() {
+		return getCachedCredential().getVOManager();
 	}
 
 }

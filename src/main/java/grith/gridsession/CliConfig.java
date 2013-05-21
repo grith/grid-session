@@ -1,6 +1,6 @@
 package grith.gridsession;
 
-import grith.jgrith.credential.Credential.PROPERTY;
+import grith.jgrith.cred.AbstractCred.PROPERTY;
 
 import java.util.Map;
 

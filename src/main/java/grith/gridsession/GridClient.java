@@ -4,6 +4,7 @@ import grisu.jcommons.configuration.CommonGridProperties;
 import grith.jgrith.cred.AbstractCred;
 import grith.jgrith.cred.Cred;
 import grith.jgrith.cred.GridLoginParameters;
+import grith.jgrith.cred.MyProxyCred;
 import grith.jgrith.cred.ProxyCred;
 import grith.jgrith.cred.callbacks.CliCallback;
 
@@ -16,20 +17,33 @@ public class GridClient extends SessionClient {
 	public static final Logger myLogger = LoggerFactory
 			.getLogger(GridClient.class);
 
-
-
 	private final GridLoginParameters loginParams;
 
 	private Cred cred = null;
-
+	
 	public GridClient() throws Exception {
 		this(new GridLoginParameters());
 
+	}
+	
+	public GridClient(boolean logout, boolean startSession) throws Exception {
+		super(logout, startSession);
+		this.loginParams = new GridLoginParameters();
 	}
 
 	public GridClient(GridLoginParameters loginParams) throws Exception {
 		super(loginParams.isLogout(), loginParams.isStartGridSessionDeamon());
 		this.loginParams = loginParams;
+	}
+
+	@Override
+	protected void logout() {
+		
+		Cred c = getCredential();
+		if ( c != null ) {
+			c.destroy();
+		}
+
 	}
 
 	/**
@@ -43,12 +57,22 @@ public class GridClient extends SessionClient {
 	}
 
 	public Cred getCredential() {
+		
+		
 		if ((cred == null) || getLoginParameters().isNologin()) {
 
-			if (CommonGridProperties.getDefault().startGridSessionThreadOrDaemon()) {
+			boolean force = false;
+			if ( getLoginParameters() != null ) {
+				force = getLoginParameters().isForceAuthenticate();
+			}
+			
+			if (CommonGridProperties.getDefault()
+					.startGridSessionThreadOrDaemon()) {
 
 				cred = new GridSessionCred(this);
-				boolean force = getLoginParameters().isForceAuthenticate();
+				if ( logout ) {
+					cred.setSaveProxyOnCreation(false);
+				}
 
 				String mpHost = getLoginParameters().getMyProxyHost();
 				if (StringUtils.isNotBlank(mpHost)) {
@@ -68,13 +92,23 @@ public class GridClient extends SessionClient {
 				}
 			} else {
 
-				try {
-					cred = new ProxyCred();
-				} catch (Exception e) {
-					myLogger.debug("Can't find valid credential, creating new one...");
+				if (!force) {
+					try {
+						cred = MyProxyCred.loadFromDefault();
+						if ( logout ) {
+							cred.setSaveProxyOnCreation(false);
+						}
+					} catch (Exception e1) {
+						myLogger.debug("No valid myproxy credential found. Trying normal proxy...");
+						try {
+							cred = new ProxyCred();
+						} catch (Exception e) {
+							myLogger.debug("Can't find valid credential, creating new one...");
+						}
+					}
 				}
 
-				if ((cred == null) || !cred.isValid()) {
+				if (getLoginParameters()!= null && ((cred == null) || !cred.isValid())) {
 
 					if (!getLoginParameters().validConfig()) {
 						myLogger.debug("Trying to retieve remaining login details.");
@@ -83,12 +117,14 @@ public class GridClient extends SessionClient {
 					}
 					cred = AbstractCred.loadFromConfig(getLoginParameters()
 							.getCredProperties());
+					if ( logout ) {
+						cred.setSaveProxyOnCreation(false);
+					}
 				}
 			}
 		}
 		return cred;
 	}
-
 
 	public GridLoginParameters getLoginParameters() {
 

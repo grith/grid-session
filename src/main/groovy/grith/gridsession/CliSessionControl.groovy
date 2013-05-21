@@ -5,12 +5,16 @@ import grisu.jcommons.configuration.CommonGridProperties
 import grisu.jcommons.constants.Enums.LoginType
 import grisu.jcommons.utils.EnvironmentVariableHelpers
 import grisu.jcommons.view.cli.CliHelpers
-import grith.jgrith.credential.Credential
+import grith.jgrith.cred.AbstractCred
 import grith.jgrith.utils.CliLogin
-import groovy.util.logging.Slf4j
 
-@Slf4j
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+
 class CliSessionControl extends SessionClient {
+	
+	static final Logger log = LoggerFactory.getLogger(CliSessionControl.class);
 
 	public static void main(String[] args) throws Exception {
 
@@ -38,7 +42,7 @@ class CliSessionControl extends SessionClient {
 	private boolean silent = false
 
 	public CliSessionControl() {
-		super()
+		super(false, true)
 
 		sm = getSession()
 	}
@@ -54,10 +58,10 @@ class CliSessionControl extends SessionClient {
 		def args
 		command = commandline[0]
 		args = commandline.drop(1)
-
 		try {
 			args = prepare(command, args)
 		} catch (all) {
+			log.error( all.getLocalizedMessage(), all)
 			println 'Wrong syntax: '+command
 			System.exit(1)
 		}
@@ -251,7 +255,7 @@ class CliSessionControl extends SessionClient {
 
 		switch(answer) {
 			case 'Institution login':
-				loginConf[Credential.PROPERTY.LoginType.toString()] = LoginType.SHIBBOLETH
+				loginConf[AbstractCred.PROPERTY.LoginType.toString()] = LoginType.SHIBBOLETH
 
 				def idps = sm.list_institutions()
 				idpToUse = CliLogin.ask("Your institution", lastIdp, idps,
@@ -262,31 +266,31 @@ class CliSessionControl extends SessionClient {
 
 
 			case lastIdpChoice:
-				loginConf[Credential.PROPERTY.LoginType.toString()] = LoginType.SHIBBOLETH
+				loginConf[AbstractCred.PROPERTY.LoginType.toString()] = LoginType.SHIBBOLETH
 				if ( ! idpToUse ) {
 					idpToUse = lastIdp
 				}
-				loginConf[Credential.PROPERTY.IdP.toString()] = idpToUse
+				loginConf[AbstractCred.PROPERTY.IdP.toString()] = idpToUse
 				def msg = "Your institution username"
 				def lastUsername = CommonGridProperties.getDefault()
 					.getLastShibUsername()
 
 				def username = CliLogin.ask(msg, lastUsername)
-				loginConf[Credential.PROPERTY.Username.toString()] = username
+				loginConf[AbstractCred.PROPERTY.Username.toString()] = username
 				char[] pw = CliLogin.askPassword("Your institution password")
-				loginConf[Credential.PROPERTY.Password.toString()] = pw
+				loginConf[AbstractCred.PROPERTY.Password.toString()] = pw
 
 				break
 			case 'MyProxy login':
-				loginConf[Credential.PROPERTY.LoginType.toString()] = LoginType.MYPROXY
+				loginConf[AbstractCred.PROPERTY.LoginType.toString()] = LoginType.MYPROXY
 
 				def username = CliLogin.ask("MyProxy username", CommonGridProperties
 					.getDefault().getLastMyProxyUsername())
 
-				loginConf[Credential.PROPERTY.MyProxyUsername.toString()] = username
+				loginConf[AbstractCred.PROPERTY.MyProxyUsername.toString()] = username
 
 				def pw = CliLogin.askPassword("MyProxy password")
-				loginConf[Credential.PROPERTY.MyProxyPassword.toString()] = pw
+				loginConf[AbstractCred.PROPERTY.MyProxyPassword.toString()] = pw
 
 				break
 			case 'Certificate login (custom path)':
@@ -310,15 +314,15 @@ class CliSessionControl extends SessionClient {
 						path = null
 					}
 				}
-				loginConf[Credential.PROPERTY.CertFile.toString()] = cert.getAbsolutePath()
-				loginConf[Credential.PROPERTY.KeyFile.toString()] = key.getAbsolutePath()
+				loginConf[AbstractCred.PROPERTY.CertFile.toString()] = cert.getAbsolutePath()
+				loginConf[AbstractCred.PROPERTY.KeyFile.toString()] = key.getAbsolutePath()
 			case 'Certificate login':
-				loginConf[Credential.PROPERTY.LoginType.toString()] = LoginType.X509_CERTIFICATE
+				loginConf[AbstractCred.PROPERTY.LoginType.toString()] = LoginType.X509_CERTIFICATE
 
 				char[] pw = CliLogin
 					.askPassword("Please enter your certificate passphrase")
 
-				loginConf[Credential.PROPERTY.Password.toString()] = pw
+				loginConf[AbstractCred.PROPERTY.Password.toString()] = pw
 
 				break
 			default:
@@ -326,7 +330,7 @@ class CliSessionControl extends SessionClient {
 				System.exit(1)
 		}
 
-		loginConf[Credential.PROPERTY.StorePasswordInMemory.toString()] = true
+		loginConf[AbstractCred.PROPERTY.StorePasswordInMemory.toString()] = true
 
 		return loginConf
 	}

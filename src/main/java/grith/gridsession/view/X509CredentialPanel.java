@@ -1,7 +1,7 @@
 package grith.gridsession.view;
 
 import grisu.jcommons.constants.Enums.LoginType;
-import grith.jgrith.credential.Credential.PROPERTY;
+import grith.jgrith.cred.AbstractCred.PROPERTY;
 
 import java.util.Map;
 
@@ -11,10 +11,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import com.google.common.collect.Maps;
-
-import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class X509CredentialPanel extends CredPanel {
@@ -26,12 +25,12 @@ public class X509CredentialPanel extends CredPanel {
 	 */
 	public X509CredentialPanel() {
 		setLayout(new FormLayout(new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC, }));
+				FormSpecs.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC, }));
 		add(getPanel(), "2, 2, fill, fill");
 
 	}
@@ -59,7 +58,7 @@ public class X509CredentialPanel extends CredPanel {
 					TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panel.setLayout(new FormLayout(new ColumnSpec[] { ColumnSpec
 					.decode("default:grow"), },
-					new RowSpec[] { FormFactory.DEFAULT_ROWSPEC, }));
+					new RowSpec[] { FormSpecs.DEFAULT_ROWSPEC, }));
 			panel.add(getPasswordField(), "1, 1, fill, default");
 		}
 		return panel;

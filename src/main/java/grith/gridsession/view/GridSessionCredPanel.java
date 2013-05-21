@@ -1,9 +1,11 @@
 package grith.gridsession.view;
 
 import grisu.jcommons.utils.WalltimeUtils;
+import grith.jgrith.cred.AbstractCred.PROPERTY;
 import grith.jgrith.cred.Cred;
-import grith.jgrith.credential.Credential.PROPERTY;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -13,12 +15,14 @@ import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 
 import com.google.common.collect.Maps;
-import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class GridSessionCredPanel extends CredPanel {
+public class GridSessionCredPanel extends CredPanel implements PropertyChangeListener {
+	
+	public static final int UPDATE_WAIT_TIME_SECONDS = 60;
 
 	private static String generateHtml(Map<String, String> sessionProps) {
 
@@ -48,18 +52,20 @@ public class GridSessionCredPanel extends CredPanel {
 	private JEditorPane propertiesPane;
 
 	private Cred cred = null;
+	
+	private Thread updateCredPropertiesThread = null;
 
 	/**
 	 * Create the panel.
 	 */
 	public GridSessionCredPanel() {
 		setLayout(new FormLayout(new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("default:grow"),
-				FormFactory.RELATED_GAP_ROWSPEC, }));
+				FormSpecs.RELATED_GAP_ROWSPEC, }));
 		add(getPanel(), "2, 2, fill, fill");
 
 		setProperties();
@@ -84,12 +90,12 @@ public class GridSessionCredPanel extends CredPanel {
 		if (panel == null) {
 			panel = new JPanel();
 			panel.setLayout(new FormLayout(new ColumnSpec[] {
-					FormFactory.RELATED_GAP_COLSPEC,
+					FormSpecs.RELATED_GAP_COLSPEC,
 					ColumnSpec.decode("default:grow"),
-					FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
-					FormFactory.RELATED_GAP_ROWSPEC,
+					FormSpecs.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+					FormSpecs.RELATED_GAP_ROWSPEC,
 					RowSpec.decode("default:grow"),
-					FormFactory.RELATED_GAP_ROWSPEC, }));
+					FormSpecs.RELATED_GAP_ROWSPEC, }));
 			panel.add(getScrollPane(), "2, 2, fill, fill");
 			setBorderTitle("Session details");
 		}
@@ -122,9 +128,29 @@ public class GridSessionCredPanel extends CredPanel {
 		panel.setBorder(new TitledBorder(null, title, TitledBorder.LEADING, TitledBorder.TOP, null, null));
 	}
 
-	public void setCred(Cred cred) {
+	public synchronized void setCred(Cred cred) {
 		this.cred = cred;
 		setProperties();
+		
+		if ( updateCredPropertiesThread == null || ! updateCredPropertiesThread.isAlive() ) {
+			updateCredPropertiesThread = new Thread() {
+				public void run() {
+					while (GridSessionCredPanel.this.cred != null) {
+					try {
+						Thread.sleep(UPDATE_WAIT_TIME_SECONDS * 1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						return;
+					}
+					
+					setProperties();
+					}
+				}
+			};
+			updateCredPropertiesThread.start();
+			
+		}
+		
 	}
 
 	private void setProperties() {
@@ -140,9 +166,9 @@ public class GridSessionCredPanel extends CredPanel {
 			props.put("", "");
 
 			props.put("Identity", cred.getDN());
-			String lifetime = WalltimeUtils.convertSeconds(cred
-					.getRemainingLifetime());
-			props.put("Remaining lifetime", lifetime);
+			int lt = cred.getRemainingLifetime();
+			String lifetime = WalltimeUtils.convertSeconds(lt);
+			props.put("Remaining lifetime", lifetime + " ( "+lt+" seconds )");
 
 			boolean autorenews = cred.isRenewable();
 			if (autorenews) {
@@ -151,6 +177,7 @@ public class GridSessionCredPanel extends CredPanel {
 				props.put("Auto-refresh",
 						"no (to enable, re-login via one of the other methods)");
 			}
+
 			// props.put("Login type", cred.g)
 			propText = generateHtml(props);
 		}
@@ -167,5 +194,17 @@ public class GridSessionCredPanel extends CredPanel {
 		} else {
 			return true;
 		}
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+
+		if ( "credential".equals(evt.getPropertyName()) ) {
+			
+			Cred cred = (Cred) evt.getNewValue();
+			setCred(cred);
+			
+		}
+		
 	}
 }

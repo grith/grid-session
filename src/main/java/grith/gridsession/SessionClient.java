@@ -50,7 +50,7 @@ public class SessionClient {
 
 	private boolean useLocalTransport = false;
 
-	private final boolean logout;
+	protected final boolean logout;
 
 
 	private boolean clientStarted = false;
@@ -78,7 +78,7 @@ public class SessionClient {
 		EnvironmentVariableHelpers.loadEnvironmentVariablesToSystemProperties();
 
 		CertificateFiles.copyCACerts(false);
-		VomsesFiles.copyVomses(VomsesFiles.DEFAULT_VOS);
+//		VomsesFiles.copyVomses(VomsesFiles.DEFAULT_VOS);
 		BouncyCastleTool.initBouncyCastle();
 
 		if (useSSL) {
@@ -143,7 +143,7 @@ public class SessionClient {
 							GridSessionDaemon daemon = new GridSessionDaemon();
 
 						} catch (Exception e2) {
-							e2.printStackTrace();
+							myLogger.error("Error starting daemon", e2);
 						}
 					}
 				}
@@ -154,7 +154,7 @@ public class SessionClient {
 					GridSessionDaemon daemon = new GridSessionDaemon();
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					myLogger.error("Error starting session service.", e);
 				}
 			}
 
@@ -173,6 +173,7 @@ public class SessionClient {
 						.startGridSessionThreadOrDaemon());
 			}
 		} catch (Exception e) {
+			myLogger.debug("Error starting client.",e);
 			throw new RuntimeException(e);
 		}
 
@@ -246,6 +247,10 @@ public class SessionClient {
 	public void setUseSSL(boolean useSSL) {
 		this.useSSL = useSSL;
 	}
+	
+	protected void logout() {
+		// can be overwritten
+	}
 
 	protected synchronized void startClient(boolean gridSessionServerRunning)
 			throws Exception {
@@ -255,6 +260,7 @@ public class SessionClient {
 		if (!gridSessionServerRunning) {
 			if (logout) {
 				myLogger.debug("Logging out from non-grid-session client...");
+				logout();
 				System.exit(0);
 			}
 			myLogger.debug("Starting non-RPC grid session...");
@@ -338,7 +344,6 @@ public class SessionClient {
 					break;
 
 				} catch (UndeclaredThrowableException e) {
-					// e.printStackTrace();
 					myLogger.debug("Could not execute command, trying again.",
 							e);
 					try {
@@ -377,14 +382,14 @@ public class SessionClient {
 
 	protected void startDaemon(Daemon d) {
 
-		String memMin = "-Xms24m";
-		String memMax = "-Xmx24m";
+		String memMin = "-Xms32m";
+		String memMax = "-Xmx32m";
 
 		JavaVMArguments args;
 		try {
 			args = JavaVMArguments.current();
 		} catch (IOException e) {
-			e.printStackTrace();
+			myLogger.debug("Error starting client.", e);
 			throw new RuntimeException(e);
 		}
 		boolean jar = false;

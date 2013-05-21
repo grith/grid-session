@@ -7,12 +7,12 @@ import grisu.jcommons.utils.OutputHelpers;
 import grisu.jcommons.utils.WalltimeUtils;
 import grith.jgrith.control.SlcsLoginWrapper;
 import grith.jgrith.cred.AbstractCred;
+import grith.jgrith.cred.AbstractCred.PROPERTY;
 import grith.jgrith.cred.Cred;
 import grith.jgrith.cred.MyProxyCred;
 import grith.jgrith.cred.ProxyCred;
 import grith.jgrith.cred.SLCSCred;
 import grith.jgrith.cred.X509Cred;
-import grith.jgrith.credential.Credential.PROPERTY;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -391,7 +391,24 @@ PropertyChangeListener {
 
 		myLogger.debug("Saving credential to "+path);
 		AbstractCred c = getCredential();
-		if (c == null) {
+		if (c == null || c.getGSSCredential() == null) {
+			return "";
+		}
+
+		try {
+			c.saveProxy(path);
+			return c.getProxyPath();
+		} catch (Exception e) {
+			myLogger.error("Can't upload to myproxy: {}", e);
+			return "";
+		}
+	}
+	
+	public String save_group_proxy(String fqan, String path) {
+
+		myLogger.debug("Saving group credential for group {} to {}", fqan, path);
+		AbstractCred c = getCredential().getGroupCredential(fqan);
+		if (c == null || c.getGSSCredential() == null ) {
 			return "";
 		}
 
@@ -508,6 +525,7 @@ PropertyChangeListener {
 			PROPERTY p = PROPERTY.valueOf((String) key);
 			newMap.put(p, config.get(key));
 		}
+		
 
 		AbstractCred currentCredential = AbstractCred.loadFromConfig(newMap);
 

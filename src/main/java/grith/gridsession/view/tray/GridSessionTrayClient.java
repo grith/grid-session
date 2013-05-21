@@ -36,8 +36,8 @@ PropertyChangeListener {
 
 		Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler());
 
-		Collection<String> vos = Sets.newHashSet("nz");
-		VomsesFiles.copyVomses(vos);
+//		Collection<String> vos = Sets.newHashSet("nz");
+//		VomsesFiles.copyVomses(vos);
 		CertificateFiles.copyCACerts(false);
 
 		myLogger.debug("Setting look and feel.");
@@ -74,7 +74,7 @@ PropertyChangeListener {
 	private final GridSessionController controller;
 
 	public GridSessionTrayClient() throws Exception {
-		super();
+		super(false, true);
 
 		controller = new GridSessionController(this);
 		popup = new GridSessionMenu(controller);
@@ -101,7 +101,9 @@ PropertyChangeListener {
 
 		controller.addPropertyChangeListener(this);
 		controller.init();
-
+		
+		controller.showLoginDialog(true);
+		
 	}
 
 	@Override

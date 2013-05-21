@@ -2,8 +2,8 @@ package grith.gridsession.view;
 
 import grisu.jcommons.configuration.CommonGridProperties;
 import grisu.jcommons.constants.Enums.LoginType;
+import grith.jgrith.cred.AbstractCred.PROPERTY;
 import grith.jgrith.cred.MyProxyCred;
-import grith.jgrith.credential.Credential.PROPERTY;
 
 import java.util.Map;
 
@@ -14,11 +14,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import org.apache.commons.lang.StringUtils;
-import com.google.common.collect.Maps;
 
-import com.jgoodies.forms.factories.FormFactory;
+import com.google.common.collect.Maps;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class MyProxyCredPanel extends CredPanel {
@@ -32,13 +32,13 @@ public class MyProxyCredPanel extends CredPanel {
 	 */
 	public MyProxyCredPanel() {
 		setLayout(new FormLayout(new ColumnSpec[] {
-				FormFactory.RELATED_GAP_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("125px:grow"),
-				FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
-				FormFactory.RELATED_GAP_ROWSPEC, RowSpec.decode("51px"),
-				FormFactory.RELATED_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC,
-				FormFactory.RELATED_GAP_ROWSPEC, }));
+				FormSpecs.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("51px"),
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC, }));
 		add(getPanel_1(), "2, 1, 1, 2, fill, fill");
 		add(getPanel_1_1(), "2, 4, fill, fill");
 
@@ -86,12 +86,12 @@ public class MyProxyCredPanel extends CredPanel {
 			panel = new JPanel();
 			panel.setBorder(new TitledBorder(null, "MyProxy username", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panel.setLayout(new FormLayout(new ColumnSpec[] {
-					FormFactory.RELATED_GAP_COLSPEC,
+					FormSpecs.RELATED_GAP_COLSPEC,
 					ColumnSpec.decode("default:grow"),
-					FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC, }));
+					FormSpecs.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+					FormSpecs.RELATED_GAP_ROWSPEC,
+					FormSpecs.DEFAULT_ROWSPEC,
+					FormSpecs.RELATED_GAP_ROWSPEC, }));
 			panel.add(getMyproxyUsername(), "2, 2, fill, default");
 		}
 		return panel;
@@ -103,12 +103,12 @@ public class MyProxyCredPanel extends CredPanel {
 			panel_1.setBorder(new TitledBorder(null, "MyProxy password",
 					TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			panel_1.setLayout(new FormLayout(new ColumnSpec[] {
-					FormFactory.RELATED_GAP_COLSPEC,
+					FormSpecs.RELATED_GAP_COLSPEC,
 					ColumnSpec.decode("default:grow"),
-					FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
-					FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.RELATED_GAP_ROWSPEC, }));
+					FormSpecs.RELATED_GAP_COLSPEC, }, new RowSpec[] {
+					FormSpecs.RELATED_GAP_ROWSPEC,
+					FormSpecs.DEFAULT_ROWSPEC,
+					FormSpecs.RELATED_GAP_ROWSPEC, }));
 			panel_1.add(getPasswordField(), "2, 2, fill, default");
 		}
 		return panel_1;

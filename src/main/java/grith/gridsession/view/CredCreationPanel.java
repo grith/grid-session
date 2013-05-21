@@ -3,8 +3,8 @@ package grith.gridsession.view;
 import grisu.jcommons.exceptions.CredentialException;
 import grith.gridsession.GridSessionCred;
 import grith.gridsession.SessionClient;
+import grith.jgrith.cred.AbstractCred.PROPERTY;
 import grith.jgrith.cred.Cred;
-import grith.jgrith.credential.Credential.PROPERTY;
 
 import java.util.Map;
 import java.util.logging.Level;
@@ -20,9 +20,9 @@ import org.jdesktop.swingx.error.ErrorInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
 import com.jgoodies.forms.layout.RowSpec;
 
 public class CredCreationPanel extends JPanel {
@@ -60,9 +60,9 @@ public class CredCreationPanel extends JPanel {
 		}
 		setLayout(new FormLayout(
 				new ColumnSpec[] { ColumnSpec.decode("166px:grow"), },
-				new RowSpec[] { FormFactory.LINE_GAP_ROWSPEC,
-						FormFactory.MIN_ROWSPEC,
-						FormFactory.RELATED_GAP_ROWSPEC, }));
+				new RowSpec[] { FormSpecs.LINE_GAP_ROWSPEC,
+						FormSpecs.MIN_ROWSPEC,
+						FormSpecs.RELATED_GAP_ROWSPEC, }));
 		add(getTabbedPane(), "1, 2, fill, fill");
 
 	}
@@ -156,6 +156,8 @@ public class CredCreationPanel extends JPanel {
 	private GridSessionCredPanel getGridSessionCredPanel() {
 		if (gridSessionCredPanel == null) {
 			gridSessionCredPanel = new GridSessionCredPanel();
+			addPropertyChangeListener(gridSessionCredPanel);
+			
 		}
 		return gridSessionCredPanel;
 	}
