@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>nesi</artifactId>
 		<groupId>nz.org.nesi</groupId>
-		<version>0.23</version>
+		<version>1.0</version>
 	</parent>
 
 
