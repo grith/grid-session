@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>grith</groupId>
 			<artifactId>jgrith</artifactId>
-			<version>1.0</version>
+			<version>1.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
@@ -107,8 +107,8 @@
             </excludes>
         </resource>
 
-    </resources>		
-	
+    </resources>
+
 		<plugins>
 
 			<plugin>
@@ -123,7 +123,7 @@
 					<tagNameFormat>@{project.version}</tagNameFormat>
 					<releaseProfiles>deb,rpm</releaseProfiles>
 				</configuration>
-			</plugin>				
+			</plugin>
 
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -206,7 +206,7 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
+				<!--This plugin's configuration is used to store Eclipse m2e settings
 					only. It has no influence on the Maven build itself. -->
 <!-- 				<plugin> -->
 <!-- 					<groupId>org.eclipse.m2e</groupId> -->
@@ -517,9 +517,9 @@
 							<preinstallScriptlet>
 								<script>echo "Installing Grid-Session deamon..."</script>
 							</preinstallScriptlet>
-							<!-- <postinstallScriptlet> <scriptFile>src/main/scripts/postinstall</scriptFile> 
-								<fileEncoding>utf-8</fileEncoding> </postinstallScriptlet> <preremoveScriptlet> 
-								<scriptFile>src/main/scripts/preremove</scriptFile> <fileEncoding>utf-8</fileEncoding> 
+							<!-- <postinstallScriptlet> <scriptFile>src/main/scripts/postinstall</scriptFile>
+								<fileEncoding>utf-8</fileEncoding> </postinstallScriptlet> <preremoveScriptlet>
+								<scriptFile>src/main/scripts/preremove</scriptFile> <fileEncoding>utf-8</fileEncoding>
 								</preremoveScriptlet> -->
 						</configuration>
 					</plugin>
